@@ -29,41 +29,7 @@ grails and creates the .war binary and then stores it for later use. </descripti
     </hudson.triggers.SCMTrigger>
   </triggers>
   <concurrentBuild>false</concurrentBuild>
-  <builders>
-    <com.g2one.hudson.grails.GrailsBuilder>
-      <targets>clean</targets>
-      <name>grails</name>
-      <grailsWorkDir></grailsWorkDir>
-      <projectWorkDir></projectWorkDir>
-      <projectBaseDir></projectBaseDir>
-      <serverPort></serverPort>
-      <properties>grails.project.verbose.compile=true</properties>
-      <forceUpgrade>false</forceUpgrade>
-      <nonInteractive>true</nonInteractive>
-    </com.g2one.hudson.grails.GrailsBuilder>
-    <com.g2one.hudson.grails.GrailsBuilder>
-      <targets>compile</targets>
-      <name>grails</name>
-      <grailsWorkDir></grailsWorkDir>
-      <projectWorkDir></projectWorkDir>
-      <projectBaseDir></projectBaseDir>
-      <serverPort></serverPort>
-      <properties></properties>
-      <forceUpgrade>false</forceUpgrade>
-      <nonInteractive>true</nonInteractive>
-    </com.g2one.hudson.grails.GrailsBuilder>
-    <com.g2one.hudson.grails.GrailsBuilder>
-      <targets>&quot;prod war wildtracks.war&quot;</targets>
-      <name>grails</name>
-      <grailsWorkDir></grailsWorkDir>
-      <projectWorkDir></projectWorkDir>
-      <projectBaseDir></projectBaseDir>
-      <serverPort></serverPort>
-      <properties>grails.project.verbose.compile=true</properties>
-      <forceUpgrade>false</forceUpgrade>
-      <nonInteractive>true</nonInteractive>
-    </com.g2one.hudson.grails.GrailsBuilder>
-  </builders>
+  <builders/>
   <publishers>
     <hudson.tasks.ArtifactArchiver>
       <artifacts>wildtracks.war, grails-app/migrations/**/*</artifacts>
