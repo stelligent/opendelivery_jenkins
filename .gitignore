@@ -1,0 +1,17 @@
+log
+*.log
+*.tmp
+*.old
+*.bak
+*.jar
+.*
+plugins/
+updates/
+jobs/*/builds
+jobs/*/last*
+jobs/*/next*
+jobs/*/*.csv
+jobs/*/*.txt
+jobs/*/*.log
+jobs/*/workspace
+hudson.plugins.s3.S3BucketPublisher.xml
