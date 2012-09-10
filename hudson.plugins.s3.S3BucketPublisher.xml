@@ -4,8 +4,8 @@
   <profiles>
     <hudson.plugins.s3.S3Profile>
       <name>platform</name>
-      <accessKey>AKIAIVMCEVRMFUFRZMBQ</accessKey>
-      <secretKey>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</secretKey>
+      <accessKey>AKIAIEVRMFUFRZBQ</accessKey>
+      <secretKey>0EIfOsAl/0UqOaiJzEecH/dDY87mSQ0/SQ</secretKey>
     </hudson.plugins.s3.S3Profile>
   </profiles>
 </hudson.plugins.s3.S3BucketPublisher_-DescriptorImpl>
