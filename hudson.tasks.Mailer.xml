@@ -3,8 +3,8 @@
   <helpRedirect/>
   <hudsonUrl>http://ec2-204-236-228-3.compute-1.amazonaws.com:8080/jenkins/</hudsonUrl>
   <smtpAuthUsername>buildservers@gmail.com</smtpAuthUsername>
-  <smtpAuthPassword>yVCStvXf+bkBmu40KCtFUpqmIJ0PmvCcmbwCQW09zBlcq3M7XiVzOrjCOL2Ucxt6Wb0fTOw/VjkQFHnDuuGF5uax9CP82wloxm1gyMAbXiPl0/nd6wj3+i3StTcPpG3RgG5OB2AcM11gPfllyO0K/Q==</smtpAuthPassword>
-  <adminAddress>webinars@stelligent.com</adminAddress>
+  <smtpAuthPassword>0Yn7j53hYqwRfXwG+N+5fKZBi7eXTirvlL12aIk51uQeNweTF+kqoG668DnSiuqtAVDSJsarSpYqRT/2KGkOl0Tp0kKmjyStKfmjMNtvjTBLeDFsiXLxTJJZBWipBjhM58z4KpiP+zqV1Fgzs9KA/yxWgB9ugYbpUrhcUsZSeG3b08YdX/asUCb25LCNf00vuIdcmwDwkQK5yf2tK2Aa88sRu8EeDAbSnk05WXWbyyw=</smtpAuthPassword>
+  <adminAddress>brian.jakovich@stelligent.com</adminAddress>
   <smtpHost>smtp.gmail.com</smtpHost>
   <useSsl>true</useSsl>
   <smtpPort>465</smtpPort>
