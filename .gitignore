@@ -5,7 +5,6 @@ log
 *.bak
 *.jar
 .*
-plugins/
 updates/
 jobs/*/builds
 jobs/*/last*
