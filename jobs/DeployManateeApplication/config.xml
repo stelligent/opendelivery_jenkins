@@ -74,14 +74,13 @@ else
  SSH_KEY=/usr/share/tomcat6/production.pem
 fi
 
-#SSH_KEY=/usr/share/tomcat6/development.pem
 #/usr/share/tomcat6/.ssh/id_rsa
 
 cap deploy:setup stack=${STACK_NAME} key=${SSH_KEY}
 
 sed -i &quot;s@manatee0@${HOST}@&quot; ${WORKSPACE}/deployment/features/deployment.feature
 
-host=`ruby /usr/share/tomcat6/scripts/aws/showback_domain.rb ${STACK_NAME} InstanceIPAddress`
+host=`ruby ${WORKSPACE}/config/aws/showback_domain.rb ${STACK_NAME} InstanceIPAddress`
 cucumber deployment/features/deployment.feature host=${host} user=ec2-user key=${SSH_KEY}
 
 sns-publish --topic-arn $SNS_TOPIC --subject &quot;Manatee Application Deployed&quot; --message &quot;Your Manatee Application has been deployed successfully. You can view it by going to http://$host/wildtracks This instance was deployed to by $JENKINS_DOMAIN&quot; --aws-credential-file /usr/share/tomcat6/aws_access</command>

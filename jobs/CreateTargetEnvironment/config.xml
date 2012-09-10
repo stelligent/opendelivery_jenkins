@@ -57,19 +57,17 @@ else
  SSH_KEY=production
 fi
 
-#JENKINSINTERNALIP=`dig +short ${JENKINSIP}`
-
 # Create Cloudformaton Stack
-ruby /usr/share/tomcat6/scripts/aws/create_stack.rb ${STACK_NAME} ${WORKSPACE}/infrastructure/manatees/production.template ${HOST} ${JENKINSIP} ${SSH_KEY} ${SGID} ${SNS_TOPIC}
+ruby ${WORKSPACE}/config/aws/create_stack.rb ${STACK_NAME} ${WORKSPACE}/infrastructure/manatees/production.template ${HOST} ${JENKINSIP} ${SSH_KEY} ${SGID} ${SNS_TOPIC}
 
 # Load SimpleDB Domain with Key/Value Pairs
-ruby /usr/share/tomcat6/scripts/aws/load_domain.rb ${STACK_NAME}
+ruby ${WORKSPACE}/config/aws/load_domain.rb ${STACK_NAME}
 
 # Pull and store variables from SimpleDB
-host=`ruby /usr/share/tomcat6/scripts/aws/showback_domain.rb ${STACK_NAME} InstanceIPAddress`
+host=`ruby ${WORKSPACE}/config/aws/showback_domain.rb ${STACK_NAME} InstanceIPAddress`
 
 # Run Acceptance Tests
-cucumber infrastructure/manatees/features/production.feature host=${host} user=ec2-user key=/usr/share/tomcat6/.ssh/id_rsa
+cucumber ${WORKSPACE}/infrastructure/manatees/features/production.feature host=${host} user=ec2-user key=/usr/share/tomcat6/.ssh/id_rsa
 
 # Publish notifications to SNS
 sns-publish --topic-arn $SNS_TOPIC --subject &quot;New Environment Ready&quot; --message &quot;Your new environment is ready. IP Address: $host. An example command to ssh into the box would be: ssh -i development.pem ec2-user@$host This instance was created by $JENKINS_DOMAIN&quot; --aws-credential-file /usr/share/tomcat6/aws_access</command>

@@ -49,7 +49,7 @@
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>ruby /usr/share/tomcat6/scripts/aws/list_stacks.rb</command>
+      <command>ruby ${WORKSPACE}/config/aws/list_stacks.rb</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>
