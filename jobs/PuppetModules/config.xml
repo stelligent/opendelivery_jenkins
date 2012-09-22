@@ -52,15 +52,6 @@
       <command>tar -czvf puppet.tar.gz infrastructure/puppet/modules/* infrastructure/puppet/manifests/*</command>
     </hudson.tasks.Shell>
   </builders>
-  <publishers>
-    <hudson.plugins.s3.S3BucketPublisher>
-      <entries>
-        <hudson.plugins.s3.Entry>
-          <bucket>sea2shore</bucket>
-          <sourceFile>puppet.tar.gz</sourceFile>
-        </hudson.plugins.s3.Entry>
-      </entries>
-    </hudson.plugins.s3.S3BucketPublisher>
-  </publishers>
+  <publishers/>
   <buildWrappers/>
 </project>

@@ -47,25 +47,17 @@
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
   <triggers class="vector">
     <hudson.triggers.SCMTrigger>
-      <spec>* * * * *</spec>
+      <spec>0 * * * *</spec>
     </hudson.triggers.SCMTrigger>
   </triggers>
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>gem build gems/common-step-definitions/common-step-definitions.gemspec</command>
+      <command>gem build gems/common-step-definitions/common-step-definitions.gemspec
+
+ruby ${WORKSPACE}/config/aws/s3_upload.rb --filename common-step-definitions-1.0.0.gem --bucket ${S3BUCKET} --key gems/common-step-definitions-1.0.0.gem</command>
     </hudson.tasks.Shell>
   </builders>
-  <publishers>
-    <hudson.plugins.s3.S3BucketPublisher>
-      <profileName>platform</profileName>
-      <entries>
-        <hudson.plugins.s3.Entry>
-          <bucket>cdplatform/gems</bucket>
-          <sourceFile>common-step-definitions-1.0.0.gem</sourceFile>
-        </hudson.plugins.s3.Entry>
-      </entries>
-    </hudson.plugins.s3.S3BucketPublisher>
-  </publishers>
+  <publishers/>
   <buildWrappers/>
 </project>
