@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hudson.plugins.s3.S3BucketPublisher_-DescriptorImpl>
+  <helpRedirect/>
+  <profiles>
+   <hudson.plugins.s3.S3Profile>
+    <name>platform</name>
+    <accessKey>AKIAJTQPGD57XC2OM3MQ</accessKey>
+    <secretKey>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</secretKey>
+   </hudson.plugins.s3.S3Profile>
+  </profiles>
+</hudson.plugins.s3.S3BucketPublisher_-DescriptorImpl>
