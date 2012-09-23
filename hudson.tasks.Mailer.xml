@@ -3,7 +3,7 @@
   <helpRedirect/>
   <hudsonUrl>http://ec2-204-236-228-3.compute-1.amazonaws.com:8080/jenkins/</hudsonUrl>
   <smtpAuthUsername>buildservers@gmail.com</smtpAuthUsername>
-  <smtpAuthPassword>0Yn7j53hYqwRfXwG+N+5fKZBi7eXTirvlL12aIk51uQeNweTF+kqoG668DnSiuqtAVDSJsarSpYqRT/2KGkOl0Tp0kKmjyStKfmjMNtvjTBLeDFsiXLxTJJZBWipBjhM58z4KpiP+zqV1Fgzs9KA/yxWgB9ugYbpUrhcUsZSeG3b08YdX/asUCb25LCNf00vuIdcmwDwkQK5yf2tK2Aa88sRu8EeDAbSnk05WXWbyyw=</smtpAuthPassword>
+  <smtpAuthPassword>muq1R1vlxAROZq4oPmNZZfWdkrXx0mYfirHEDyuKoOSHUAdVXk/Yk8MiU02wsJR4XZlOnld1CBFeuIISAqckIRbuAVIb+7imabv9G8meKwx3WXoe0NDg5HipesqGwq8TUh+q3EVcTVcS+730BSSgxOjP44pKf/vIa/iToEFrZyumpDkWpd5zvxXGit7VLT7npOWQailecI2UO2xTrmPSr6BRlbj0FFeVmTvjaZh2oBXBZVJBRHbxItnuCVUdueaF7jZzH9uLPnMl1p7MRaXSCygWfzdWYHT7AYBSLRAlBsjTNr/0iwl/gppJlk81+/i68JoVs4i1NXcCQ4F1AxWd8Q==</smtpAuthPassword>
   <adminAddress>brian.jakovich@stelligent.com</adminAddress>
   <smtpHost>smtp.gmail.com</smtpHost>
   <useSsl>true</useSsl>
