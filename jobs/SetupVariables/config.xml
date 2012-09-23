@@ -9,28 +9,28 @@
         <hudson.model.StringParameterDefinition>
           <name>STACK_NAME</name>
           <description></description>
-          <defaultValue>manatee1</defaultValue>
+          <defaultValue>cdplatform</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
-          <name>HOST</name>
+          <name>APPLICATION</name>
           <description></description>
-          <defaultValue>manatee1</defaultValue>
-        </hudson.model.StringParameterDefinition>
-        <hudson.model.StringParameterDefinition>
-          <name>JENKINSIP</name>
-          <description></description>
-          <defaultValue>0.0.0.0</defaultValue>
+          <defaultValue>cdplatform</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>PRODUCTION_IP</name>
           <description></description>
-          <defaultValue>manatees.mapntracker.com</defaultValue>
+          <defaultValue></defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.BooleanParameterDefinition>
           <name>deployToProduction</name>
           <description></description>
           <defaultValue>false</defaultValue>
         </hudson.model.BooleanParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>DOMAIN</name>
+          <description></description>
+          <defaultValue>devopscloud.com</defaultValue>
+        </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -49,7 +49,7 @@
           <configs>
             <hudson.plugins.parameterizedtrigger.CurrentBuildParameters/>
           </configs>
-          <projects> </projects>
+          <projects> CreateTargetEnvironment</projects>
           <condition>SUCCESS</condition>
           <triggerWithNoParameters>false</triggerWithNoParameters>
         </hudson.plugins.parameterizedtrigger.BuildTriggerConfig>

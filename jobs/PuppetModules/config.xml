@@ -49,7 +49,9 @@
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>tar -czvf puppet.tar.gz infrastructure/puppet/modules/* infrastructure/puppet/manifests/*</command>
+      <command>tar -czvf puppet.tar.gz infrastructure/puppet/modules/* infrastructure/puppet/manifests/*
+
+ruby ${WORKSPACE}/lib/s3_upload.rb --filename puppet.tar.gz --bucket ${S3BUCKET} --key puppet.tar.gz</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>

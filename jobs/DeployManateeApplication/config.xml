@@ -6,22 +6,7 @@ job. In order to use this job for deploying a Manatee application, enter in the 
 into the &quot;STACK_NAME&quot; parameter in this job. Jenkins will do the rest! Lastly to check your end application, go to your browser and enter in HOSTNAME.oneclickdeployment.com/wildtracks  (HOSTNAME should be the parameter that you used in &#xd;
 the Manatee Environment job)</description>
   <keepDependencies>false</keepDependencies>
-  <properties>
-    <hudson.model.ParametersDefinitionProperty>
-      <parameterDefinitions>
-        <hudson.model.StringParameterDefinition>
-          <name>STACK_NAME</name>
-          <description></description>
-          <defaultValue>platform</defaultValue>
-        </hudson.model.StringParameterDefinition>
-        <hudson.model.StringParameterDefinition>
-          <name>HOST</name>
-          <description></description>
-          <defaultValue>platform</defaultValue>
-        </hudson.model.StringParameterDefinition>
-      </parameterDefinitions>
-    </hudson.model.ParametersDefinitionProperty>
-  </properties>
+  <properties/>
   <scm class="hudson.plugins.git.GitSCM">
     <configVersion>2</configVersion>
     <userRemoteConfigs>
@@ -67,23 +52,18 @@ the Manatee Environment job)</description>
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>if [ !$deployToProduction ]
-then
- SSH_KEY=/usr/share/tomcat6/development.pem
-else 
- SSH_KEY=/usr/share/tomcat6/production.pem
-fi
+      <command>cap deploy:setup stack=${STACK_NAME} key=${SSH_KEY}
 
-#/usr/share/tomcat6/.ssh/id_rsa
+sed -i &quot;s@manatee0@${APPLICATION}@&quot; ${WORKSPACE}/deployment/features/deployment.feature
 
-cap deploy:setup stack=${STACK_NAME} key=${SSH_KEY}
+host=`ruby ${WORKSPACE}/lib/showback_domain.rb --item ${STACK_NAME} \
+                                               --key InstanceIPAddress`
 
-sed -i &quot;s@manatee0@${HOST}@&quot; ${WORKSPACE}/deployment/features/deployment.feature
+cucumber deployment/features/deployment.feature host=${host} user=ec2-user key=/usr/share/tomcat6/.ssh/id_rsa
 
-host=`ruby ${WORKSPACE}/config/aws/showback_domain.rb ${STACK_NAME} InstanceIPAddress`
-cucumber deployment/features/deployment.feature host=${host} user=ec2-user key=${SSH_KEY} artifact=
-
-sns-publish --topic-arn $SNS_TOPIC --subject &quot;Manatee Application Deployed&quot; --message &quot;Your Manatee Application has been deployed successfully. You can view it by going to http://$host/wildtracks This instance was deployed to by $JENKINS_DOMAIN&quot; --aws-credential-file /usr/share/tomcat6/aws_access</command>
+sns-publish --topic-arn $SNS_TOPIC \
+            --subject &quot;Manatee Application Deployed&quot; \
+            --message &quot;Your Manatee Application has been deployed successfully. You can view it by going to http://$host/wildtracks This instance was deployed to by $JENKINS_DOMAIN&quot; --aws-credential-file /usr/share/tomcat6/aws_access</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>

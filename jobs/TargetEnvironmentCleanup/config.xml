@@ -60,8 +60,8 @@ best practice to use this job for terminating target stacks</description>
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>ruby ${WORKSPACE}/config/aws/delete_domain.rb ${STACK_NAME}
-ruby ${WORKSPACE}/config/aws/delete_stack.rb ${STACK_NAME}
+      <command>ruby ${WORKSPACE}/lib/delete_domain.rb ${STACK_NAME}
+ruby ${WORKSPACE}/lib/delete_stack.rb ${STACK_NAME}
 </command>
     </hudson.tasks.Shell>
   </builders>
