@@ -63,6 +63,7 @@ ruby ${WORKSPACE}/lib/create_stack.rb --stackname ${STACK_NAME} \
                                       --templatelocation ${WORKSPACE}/infrastructure/target/production.template \
                                       --application ${APPLICATION} \
                                       --sshkey ${SSH_KEY} \
+                                      --s3bucket ${S3BUCKET} \
                                       --securitygroup ${SGID} \
                                       --snstopic ${SNS_TOPIC}
 
