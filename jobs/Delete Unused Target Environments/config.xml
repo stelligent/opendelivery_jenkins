@@ -1,9 +1,20 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions/>
-  <description>This is the build for the common-step-definitions gem. It builds the gem and then pushes it up to s3.</description>
+  <description>The Manatee Transient job is used to terminate stacks by STACK_NAME. It will also delete the simpledb configuration domain associated with the STACK. It is&#xd;
+best practice to use this job for terminating target stacks</description>
   <keepDependencies>false</keepDependencies>
-  <properties/>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>STACK_NAME</name>
+          <description></description>
+          <defaultValue>automanateestack99</defaultValue>
+        </hudson.model.StringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
   <scm class="hudson.plugins.git.GitSCM">
     <configVersion>2</configVersion>
     <userRemoteConfigs>
@@ -15,7 +26,7 @@
     </userRemoteConfigs>
     <branches>
       <hudson.plugins.git.BranchSpec>
-        <name>**</name>
+        <name>master</name>
       </hudson.plugins.git.BranchSpec>
     </branches>
     <disableSubmodules>false</disableSubmodules>
@@ -45,17 +56,13 @@
   <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
-  <triggers class="vector">
-    <hudson.triggers.SCMTrigger>
-      <spec>0 * * * *</spec>
-    </hudson.triggers.SCMTrigger>
-  </triggers>
+  <triggers class="vector"/>
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>gem build gems/common-step-definitions/common-step-definitions.gemspec
-
-ruby ${WORKSPACE}/lib/s3_upload.rb --filename common-step-definitions-1.0.0.gem --bucket ${S3BUCKET} --key gems/common-step-definitions-1.0.0.gem</command>
+      <command>ruby ${WORKSPACE}/lib/delete_domain.rb --domain ${STACK_NAME}
+ruby ${WORKSPACE}/lib/delete_stack.rb --stackname ${STACK_NAME}
+</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>

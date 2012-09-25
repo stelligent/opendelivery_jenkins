@@ -1,18 +1,15 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions/>
-  <description>The Manatee Deploy job is used to deploy a working manatee application onto a manatee environment. This job is typically run after the Manatee Environment&#xd;
-job. In order to use this job for deploying a Manatee application, enter in the same value you used for the &quot;STACK_NAME&quot; when running the Manatee Environment job&#xd;
-into the &quot;STACK_NAME&quot; parameter in this job. Jenkins will do the rest! Lastly to check your end application, go to your browser and enter in HOSTNAME.oneclickdeployment.com/wildtracks  (HOSTNAME should be the parameter that you used in &#xd;
-the Manatee Environment job)</description>
+  <description></description>
   <keepDependencies>false</keepDependencies>
   <properties>
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
         <hudson.model.StringParameterDefinition>
-          <name>STACK_NAME</name>
+          <name>ITEM_NAME</name>
           <description></description>
-          <defaultValue>cdplatform</defaultValue>
+          <defaultValue>properties</defaultValue>
         </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
@@ -28,7 +25,7 @@ the Manatee Environment job)</description>
     </userRemoteConfigs>
     <branches>
       <hudson.plugins.git.BranchSpec>
-        <name>**</name>
+        <name>master</name>
       </hudson.plugins.git.BranchSpec>
     </branches>
     <disableSubmodules>false</disableSubmodules>
@@ -62,19 +59,7 @@ the Manatee Environment job)</description>
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>cd ${WORKSPACE}/deployment/
-cap setup stack=${STACK_NAME} key=/usr/share/tomcat6/.ssh/id_rsa
-
-sed -i &quot;s@manatee0@${APPLICATION}@&quot; ${WORKSPACE}/deployment/features/deployment.feature
-
-host=`ruby ${WORKSPACE}/lib/showback_domain.rb --item ${STACK_NAME} \
-                                               --key InstanceIPAddress`
-
-cucumber ${WORKSPACE}/deployment/features/deployment.feature host=${host} user=ec2-user key=/usr/share/tomcat6/.ssh/id_rsa
-
-sns-publish --topic-arn $SNS_TOPIC \
-            --subject &quot;Application Deployed&quot; \
-            --message &quot;Your Application has been deployed successfully. You can view it by going to http://$host/ This instance was deployed to by $JENKINS_DOMAIN&quot; --aws-credential-file /usr/share/tomcat6/aws_access</command>
+      <command>ruby ${WORKSPACE}/lib/list_properties.rb --itemname ${ITEM_NAME}</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>

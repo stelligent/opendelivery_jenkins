@@ -6,31 +6,11 @@
   <properties>
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
-        <hudson.model.StringParameterDefinition>
-          <name>STACK_NAME</name>
-          <description></description>
-          <defaultValue>cdplatform</defaultValue>
-        </hudson.model.StringParameterDefinition>
-        <hudson.model.StringParameterDefinition>
-          <name>APPLICATION</name>
-          <description></description>
-          <defaultValue>cdplatform</defaultValue>
-        </hudson.model.StringParameterDefinition>
-        <hudson.model.StringParameterDefinition>
-          <name>PRODUCTION_IP</name>
-          <description></description>
-          <defaultValue></defaultValue>
-        </hudson.model.StringParameterDefinition>
         <hudson.model.BooleanParameterDefinition>
           <name>deployToProduction</name>
           <description></description>
           <defaultValue>false</defaultValue>
         </hudson.model.BooleanParameterDefinition>
-        <hudson.model.StringParameterDefinition>
-          <name>DOMAIN</name>
-          <description></description>
-          <defaultValue>devopscloud.com</defaultValue>
-        </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -41,7 +21,11 @@
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
   <triggers class="vector"/>
   <concurrentBuild>false</concurrentBuild>
-  <builders/>
+  <builders>
+    <hudson.tasks.Shell>
+      <command></command>
+    </hudson.tasks.Shell>
+  </builders>
   <publishers>
     <hudson.plugins.parameterizedtrigger.BuildTrigger>
       <configs>
@@ -49,7 +33,7 @@
           <configs>
             <hudson.plugins.parameterizedtrigger.CurrentBuildParameters/>
           </configs>
-          <projects> CreateTargetEnvironment</projects>
+          <projects>Create Target Environment</projects>
           <condition>SUCCESS</condition>
           <triggerWithNoParameters>false</triggerWithNoParameters>
         </hudson.plugins.parameterizedtrigger.BuildTriggerConfig>

@@ -3,17 +3,7 @@
   <actions/>
   <description></description>
   <keepDependencies>false</keepDependencies>
-  <properties>
-    <hudson.model.ParametersDefinitionProperty>
-      <parameterDefinitions>
-        <hudson.model.StringParameterDefinition>
-          <name>ArtifactUrl</name>
-          <description></description>
-          <defaultValue></defaultValue>
-        </hudson.model.StringParameterDefinition>
-      </parameterDefinitions>
-    </hudson.model.ParametersDefinitionProperty>
-  </properties>
+  <properties/>
   <scm class="hudson.plugins.git.GitSCM">
     <configVersion>2</configVersion>
     <userRemoteConfigs>
@@ -25,7 +15,7 @@
     </userRemoteConfigs>
     <branches>
       <hudson.plugins.git.BranchSpec>
-        <name>**</name>
+        <name>master</name>
       </hudson.plugins.git.BranchSpec>
     </branches>
     <disableSubmodules>false</disableSubmodules>
@@ -59,8 +49,10 @@
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>ruby ${WORKSPACE}/lib/set_properties.rb --property ArtifactUrl \
-                                        --value ${ArtifactUrl}</command>
+      <command>cd infrastructure/puppet
+tar -czvf puppet.tar.gz modules/* manifests/*
+
+ruby ${WORKSPACE}/lib/s3_upload.rb --filename puppet.tar.gz --bucket ${S3BUCKET} --key puppet.tar.gz</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>

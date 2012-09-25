@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions/>
-  <description></description>
+  <description>This is the build for the common-step-definitions gem. It builds the gem and then pushes it up to s3.</description>
   <keepDependencies>false</keepDependencies>
   <properties/>
   <scm class="hudson.plugins.git.GitSCM">
@@ -45,11 +45,17 @@
   <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
-  <triggers class="vector"/>
+  <triggers class="vector">
+    <hudson.triggers.SCMTrigger>
+      <spec>0 * * * *</spec>
+    </hudson.triggers.SCMTrigger>
+  </triggers>
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>ruby ${WORKSPACE}/lib/list_stacks.rb</command>
+      <command>gem build gems/common-step-definitions/common-step-definitions.gemspec
+
+ruby ${WORKSPACE}/lib/s3_upload.rb --filename common-step-definitions-1.0.0.gem --bucket ${S3BUCKET} --key gems/common-step-definitions-1.0.0.gem</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>

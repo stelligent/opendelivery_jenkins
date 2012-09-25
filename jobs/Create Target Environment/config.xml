@@ -16,7 +16,7 @@ the &lt;b&gt;&lt;a href=&quot;http://jenkins3.oneclickdeployment.com/jenkins/vie
     </userRemoteConfigs>
     <branches>
       <hudson.plugins.git.BranchSpec>
-        <name>**</name>
+        <name>master</name>
       </hudson.plugins.git.BranchSpec>
     </branches>
     <disableSubmodules>false</disableSubmodules>
@@ -57,22 +57,34 @@ else
  SSH_KEY=production
 fi
 
+# Set Stack Name and Application Name
+ApplicationName=Target-${BUILD_NUMBER}
+StackName=Target-${BUILD_NUMBER}
+
+# Set Domain Name
+Domain=`ruby ${WORKSPACE}/lib/showback_domain.rb --item ${properties} \
+                                                 --key DOMAIN`
+
+ruby ${WORKSPACE}/lib/set_properties.rb --property StackName \
+                                        --value ${StackName} \
+                                        --itemname ${StackName}
+
 # Create Cloudformaton Stack
-ruby ${WORKSPACE}/lib/create_stack.rb --stackname ${STACK_NAME} \
-                                      --domain ${DOMAIN} \
+ruby ${WORKSPACE}/lib/create_stack.rb --stackname ${StackName} \
+                                      --domain ${Domain} \
                                       --templatelocation ${WORKSPACE}/infrastructure/target/production.template \
-                                      --application ${APPLICATION} \
+                                      --application ${ApplicationName} \
                                       --sshkey ${SSH_KEY} \
                                       --s3bucket ${S3BUCKET} \
                                       --securitygroup ${SGID} \
                                       --snstopic ${SNS_TOPIC}
 
 # Load SimpleDB Domain with Key/Value Pairs
-ruby ${WORKSPACE}/lib/load_domain.rb --filename ${STACK_NAME} \
-                                     --itemname ${STACK_NAME}
+ruby ${WORKSPACE}/lib/load_domain.rb --filename ${StackName} \
+                                     --itemname ${StackName}
 
 # Pull and store variables from SimpleDB
-host=`ruby ${WORKSPACE}/lib/showback_domain.rb --item ${STACK_NAME} \
+host=`ruby ${WORKSPACE}/lib/showback_domain.rb --item ${StackName} \
                                                --key InstanceIPAddress`
 
 # Run Acceptance Tests
@@ -91,7 +103,7 @@ sns-publish --topic-arn $SNS_TOPIC \
           <configs>
             <hudson.plugins.parameterizedtrigger.CurrentBuildParameters/>
           </configs>
-          <projects>DeployManateeApplication, </projects>
+          <projects>Deploy Application, </projects>
           <condition>SUCCESS</condition>
           <triggerWithNoParameters>false</triggerWithNoParameters>
         </hudson.plugins.parameterizedtrigger.BuildTriggerConfig>
