@@ -93,7 +93,7 @@ The Continuous Delivery Platform consists of:&#xd;
       <filterExecutors>false</filterExecutors>
       <filterQueue>false</filterQueue>
       <properties class="hudson.model.View$PropertyList"/>
-      <selectedJob>Start Delivery Pipeline</selectedJob>
+      <selectedJob>StartDeliveryPipeline</selectedJob>
       <noOfDisplayedBuilds>1</noOfDisplayedBuilds>
       <buildViewTitle>Manatee Delivery Pipeline</buildViewTitle>
       <triggerOnlyLatestJob>false</triggerOnlyLatestJob>

@@ -53,24 +53,17 @@ the &lt;b&gt;&lt;a href=&quot;http://jenkins3.oneclickdeployment.com/jenkins/vie
       <command>if [ $deployToProduction ]
 then
  SSH_KEY=development
+ ApplicationName=${STACK_NAME}
 else
  SSH_KEY=production
+ ApplicationName=${STACK_NAME}
 fi
 
-# Set Stack Name and Application Name
-ApplicationName=Target-${BUILD_NUMBER}
-StackName=Target-${BUILD_NUMBER}
-
 # Set Domain Name
-Domain=`ruby ${WORKSPACE}/lib/showback_domain.rb --item ${properties} \
+Domain=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
                                                  --key DOMAIN`
-
-ruby ${WORKSPACE}/lib/set_properties.rb --property StackName \
-                                        --value ${StackName} \
-                                        --itemname ${StackName}
-
 # Create Cloudformaton Stack
-ruby ${WORKSPACE}/lib/create_stack.rb --stackname ${StackName} \
+ruby ${WORKSPACE}/lib/create_stack.rb --stackname ${STACK_NAME} \
                                       --domain ${Domain} \
                                       --templatelocation ${WORKSPACE}/infrastructure/target/production.template \
                                       --application ${ApplicationName} \
@@ -80,11 +73,11 @@ ruby ${WORKSPACE}/lib/create_stack.rb --stackname ${StackName} \
                                       --snstopic ${SNS_TOPIC}
 
 # Load SimpleDB Domain with Key/Value Pairs
-ruby ${WORKSPACE}/lib/load_domain.rb --filename ${StackName} \
-                                     --itemname ${StackName}
+ruby ${WORKSPACE}/lib/load_domain.rb --filename ${STACK_NAME} \
+                                     --itemname ${STACK_NAME}
 
 # Pull and store variables from SimpleDB
-host=`ruby ${WORKSPACE}/lib/showback_domain.rb --item ${StackName} \
+host=`ruby ${WORKSPACE}/lib/showback_domain.rb --item ${STACK_NAME} \
                                                --key InstanceIPAddress`
 
 # Run Acceptance Tests
@@ -93,7 +86,11 @@ cucumber ${WORKSPACE}/infrastructure/target/features/production.feature host=${h
 # Publish notifications to SNS
 sns-publish --topic-arn $SNS_TOPIC \
             --subject &quot;New Environment Ready&quot; \
-            --message &quot;Your new environment is ready. IP Address: $host. An example command to ssh into the box would be: ssh -i development.pem ec2-user@$host This instance was created by $JENKINS_DOMAIN&quot; --aws-credential-file /usr/share/tomcat6/aws_access</command>
+            --message &quot;Your new environment is ready. IP Address: $host. An example command to ssh into the box would be: ssh -i development.pem ec2-user@$host This instance was created by $JENKINS_DOMAIN\n
+Stack Name: ${STACK_NAME}\n
+Domain: ${Domain}\n
+Application: ${ApplicationName}\n
+Fully Domain: ${ApplicationName}.${Domain}&quot; --aws-credential-file /usr/share/tomcat6/aws_access</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers>
@@ -103,7 +100,7 @@ sns-publish --topic-arn $SNS_TOPIC \
           <configs>
             <hudson.plugins.parameterizedtrigger.CurrentBuildParameters/>
           </configs>
-          <projects>Deploy Application, </projects>
+          <projects>DeployApplication, </projects>
           <condition>SUCCESS</condition>
           <triggerWithNoParameters>false</triggerWithNoParameters>
         </hudson.plugins.parameterizedtrigger.BuildTriggerConfig>

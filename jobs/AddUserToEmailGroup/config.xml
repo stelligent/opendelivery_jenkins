@@ -7,14 +7,9 @@
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
         <hudson.model.StringParameterDefinition>
-          <name>ArtifactUrl</name>
+          <name>EMAIL</name>
           <description></description>
-          <defaultValue></defaultValue>
-        </hudson.model.StringParameterDefinition>
-        <hudson.model.StringParameterDefinition>
-          <name>DOMAIN</name>
-          <description></description>
-          <defaultValue></defaultValue>
+          <defaultValue>aws@stelligent.com</defaultValue>
         </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
@@ -64,13 +59,8 @@
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>ruby ${WORKSPACE}/lib/set_properties.rb --property ArtifactUrl \
-                                        --value ${ArtifactUrl} \
-                                        --itemname properties
-
-ruby ${WORKSPACE}/lib/set_properties.rb --property DOMAIN \
-                                        --value ${DOMAIN} \
-                                        --itemname properties</command>
+      <command>ruby ${WORKSPACE}/lib/add_email_to_group.rb --email ${EMAIL} \
+                                            --snsarn ${SNS_TOPIC}</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>

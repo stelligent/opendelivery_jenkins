@@ -65,8 +65,6 @@ the Manatee Environment job)</description>
       <command>cd ${WORKSPACE}/deployment/
 cap setup stack=${STACK_NAME} key=/usr/share/tomcat6/.ssh/id_rsa
 
-sed -i &quot;s@manatee0@${APPLICATION}@&quot; ${WORKSPACE}/deployment/features/deployment.feature
-
 host=`ruby ${WORKSPACE}/lib/showback_domain.rb --item ${STACK_NAME} \
                                                --key InstanceIPAddress`
 
