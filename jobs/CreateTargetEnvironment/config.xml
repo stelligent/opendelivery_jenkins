@@ -50,7 +50,7 @@ the &lt;b&gt;&lt;a href=&quot;/jenkins/view/DeliveryPipeline/&quot;&gt;DeliveryP
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>if [ $deployToProduction ]
+      <command>if [ $deployToProduction ] == true
 then
  SSH_KEY=production
  ApplicationName=${STACK_NAME}
