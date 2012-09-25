@@ -68,7 +68,8 @@ ruby ${WORKSPACE}/lib/create_stack.rb --stackname ${STACK_NAME} \
                                       --snstopic ${SNS_TOPIC}
 
 # Load SimpleDB Domain with Key/Value Pairs
-ruby ${WORKSPACE}/lib/load_domain.rb --stackname ${STACK_NAME}
+ruby ${WORKSPACE}/lib/load_domain.rb --filename ${STACK_NAME} \
+                                     --itemname ${STACK_NAME}
 
 # Pull and store variables from SimpleDB
 host=`ruby ${WORKSPACE}/lib/showback_domain.rb --item ${STACK_NAME} \
