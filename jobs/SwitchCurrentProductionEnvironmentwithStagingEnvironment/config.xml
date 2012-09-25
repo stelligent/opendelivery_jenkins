@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions/>
-  <description>The Manatee Blue Green job is used for switching from Dev to Prod. Once you have an environment that is ready for production, use this build to do the DNS migrations.&#xd;
+  <description>This job is used for switching from Dev to Prod. Once you have an environment that is ready for production, use this build to do the DNS migrations.&#xd;
  In order to perform a successful migration, enter in the IP that you want to be the new production serving instance in the parameter &quot;BLUE_IP&quot;. Then enter in the intended CNAME for the application to be served on, for instance prod.oneclickdeployment.com. &#xd;
 &#xd;
 Click Build and Jenkins will do the rest!&#xd;

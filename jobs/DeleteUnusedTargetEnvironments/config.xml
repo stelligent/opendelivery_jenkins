@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions/>
-  <description>The Manatee Transient job is used to terminate stacks by STACK_NAME. It will also delete the simpledb configuration domain associated with the STACK. It is&#xd;
+  <description>This job is used to terminate stacks by STACK_NAME. It will also delete the simpledb configuration domain associated with the STACK. It is&#xd;
 best practice to use this job for terminating target stacks</description>
   <keepDependencies>false</keepDependencies>
   <properties>
