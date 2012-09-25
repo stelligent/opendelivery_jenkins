@@ -6,7 +6,17 @@ job. In order to use this job for deploying a Manatee application, enter in the 
 into the &quot;STACK_NAME&quot; parameter in this job. Jenkins will do the rest! Lastly to check your end application, go to your browser and enter in HOSTNAME.oneclickdeployment.com/wildtracks  (HOSTNAME should be the parameter that you used in &#xd;
 the Manatee Environment job)</description>
   <keepDependencies>false</keepDependencies>
-  <properties/>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>STACK_NAME</name>
+          <description></description>
+          <defaultValue>cdplatform</defaultValue>
+        </hudson.model.StringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
   <scm class="hudson.plugins.git.GitSCM">
     <configVersion>2</configVersion>
     <userRemoteConfigs>
@@ -52,18 +62,19 @@ the Manatee Environment job)</description>
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>cap deploy:setup stack=${STACK_NAME} key=${SSH_KEY}
+      <command>cd ${WORKSPACE}/deployment/
+cap setup stack=${STACK_NAME} key=/usr/share/tomcat6/.ssh/id_rsa
 
 sed -i &quot;s@manatee0@${APPLICATION}@&quot; ${WORKSPACE}/deployment/features/deployment.feature
 
 host=`ruby ${WORKSPACE}/lib/showback_domain.rb --item ${STACK_NAME} \
                                                --key InstanceIPAddress`
 
-cucumber deployment/features/deployment.feature host=${host} user=ec2-user key=/usr/share/tomcat6/.ssh/id_rsa
+cucumber ${WORKSPACE}/deployment/features/deployment.feature host=${host} user=ec2-user key=/usr/share/tomcat6/.ssh/id_rsa
 
 sns-publish --topic-arn $SNS_TOPIC \
-            --subject &quot;Manatee Application Deployed&quot; \
-            --message &quot;Your Manatee Application has been deployed successfully. You can view it by going to http://$host/wildtracks This instance was deployed to by $JENKINS_DOMAIN&quot; --aws-credential-file /usr/share/tomcat6/aws_access</command>
+            --subject &quot;Application Deployed&quot; \
+            --message &quot;Your Application has been deployed successfully. You can view it by going to http://$host/ This instance was deployed to by $JENKINS_DOMAIN&quot; --aws-credential-file /usr/share/tomcat6/aws_access</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>
