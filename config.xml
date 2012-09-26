@@ -95,7 +95,7 @@ The Continuous Delivery Platform consists of:&#xd;
       <properties class="hudson.model.View$PropertyList"/>
       <selectedJob>StartDeliveryPipeline</selectedJob>
       <noOfDisplayedBuilds>1</noOfDisplayedBuilds>
-      <buildViewTitle>Manatee Delivery Pipeline</buildViewTitle>
+      <buildViewTitle>Delivery Pipeline</buildViewTitle>
       <triggerOnlyLatestJob>false</triggerOnlyLatestJob>
     </au.com.centrumsystems.hudson.plugin.buildpipeline.BuildPipelineView>
     <listView>
