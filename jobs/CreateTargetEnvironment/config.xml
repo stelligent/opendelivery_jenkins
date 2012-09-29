@@ -65,6 +65,7 @@ Domain=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
 # Create Cloudformaton Stack
 ruby ${WORKSPACE}/lib/create_stack.rb --stackname ${STACK_NAME} \
                                       --domain ${Domain} \
+                                      --amibuild TRUE \
                                       --templatelocation ${WORKSPACE}/infrastructure/target/production.template \
                                       --application ${ApplicationName} \
                                       --sshkey ${SSH_KEY} \
