@@ -49,47 +49,9 @@
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command># Set SSH Key
-SSH_KEY=development
+      <command>tar -czvf capistrano.tar.gz deployment/*
 
-# Set AMI ID
-BASE_AMI=`ruby ${WORKSPACE}/lib/showback_domain.rb --item ami \
-                                                 --key base`
-# Set Domain Name
-Domain=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
-                                                 --key DOMAIN`
-# Create Cloudformaton Stack
-ruby ${WORKSPACE}/lib/create_stack.rb --stackname AMI-${BUILD_NUMBER} \
-                                      --domain ${Domain} \
-                                      --scriptedorami SCRIPTED \
-                                      --ami ${BASE_AMI} \
-                                      --templatelocation ${WORKSPACE}/infrastructure/target/production.template \
-                                      --application AMI-${BUILD_NUMBER} \
-                                      --sshkey ${SSH_KEY} \
-                                      --s3bucket ${S3BUCKET} \
-                                      --securitygroup ${SGID} \
-                                      --snstopic ${SNS_TOPIC}
-
-# Load SimpleDB Domain with Key/Value Pairs
-ruby ${WORKSPACE}/lib/load_domain.rb --filename AMI-${BUILD_NUMBER} \
-                                     --itemname AMI-${BUILD_NUMBER}
-
-# Pull and store variables from SimpleDB
-host=`ruby ${WORKSPACE}/lib/showback_domain.rb --item AMI-${BUILD_NUMBER} \
-                                               --key InstanceIPAddress`
-
-# Run Infrastructure Acceptance Tests
-cucumber ${WORKSPACE}/infrastructure/target/features/production.feature host=${host} user=ec2-user key=/usr/share/tomcat6/.ssh/id_rsa
-
-# Run Deployment Acceptance Tests
-cucumber ${WORKSPACE}/deployment/features/deployment.feature host=${host} user=ec2-user key=/usr/share/tomcat6/.ssh/id_rsa
-
-# AMI the instance
-ruby ${WORKSPACE}/lib/create_ami.rb --stackname AMI-${BUILD_NUMBER} \
-                                    --imagename AMI-${BUILD_NUMBER}
-
-
-</command>
+ruby ${WORKSPACE}/lib/s3_upload.rb --filename capistrano.tar.gz --bucket ${S3BUCKET} --key capistrano.tar.gz</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>
