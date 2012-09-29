@@ -52,13 +52,17 @@
       <command># Set SSH Key
 SSH_KEY=development
 
+# Set AMI ID
+BASE_AMI=`ruby ${WORKSPACE}/lib/showback_domain.rb --item ami \
+                                                 --key base`
 # Set Domain Name
 Domain=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
                                                  --key DOMAIN`
 # Create Cloudformaton Stack
 ruby ${WORKSPACE}/lib/create_stack.rb --stackname AMI-${BUILD_NUMBER} \
                                       --domain ${Domain} \
-                                      --amibuild FALSE \
+                                      --scriptedorami SCRIPTED \
+                                      --ami ${BASE_AMI} \
                                       --templatelocation ${WORKSPACE}/infrastructure/target/production.template \
                                       --application AMI-${BUILD_NUMBER} \
                                       --sshkey ${SSH_KEY} \
@@ -79,7 +83,7 @@ cucumber ${WORKSPACE}/infrastructure/target/features/production.feature host=${h
 
 # AMI the instance
 ruby ${WORKSPACE}/lib/create_ami.rb --stackname AMI-${BUILD_NUMBER} \
-                                 --imagename AMI-${BUILD_NUMBER}
+                                    --imagename AMI-${BUILD_NUMBER}
 
 
 </command>

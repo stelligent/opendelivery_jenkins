@@ -59,13 +59,18 @@ else
  ApplicationName=${STACK_NAME}
 fi
 
+# Set AMI ID
+LATEST_AMI=`ruby ${WORKSPACE}/lib/showback_domain.rb --item ami \
+                                                 --key latest`
+
 # Set Domain Name
 Domain=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
                                                  --key DOMAIN`
 # Create Cloudformaton Stack
 ruby ${WORKSPACE}/lib/create_stack.rb --stackname ${STACK_NAME} \
                                       --domain ${Domain} \
-                                      --amibuild TRUE \
+                                      --scriptedorami AMI \
+                                      --ami ${LATEST_AMI} \
                                       --templatelocation ${WORKSPACE}/infrastructure/target/production.template \
                                       --application ${ApplicationName} \
                                       --sshkey ${SSH_KEY} \
