@@ -49,7 +49,35 @@
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command></command>
+      <command># Set SSH Key
+SSH_KEY=development
+
+# Set Domain Name
+Domain=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
+                                                 --key DOMAIN`
+# Create Cloudformaton Stack
+ruby ${WORKSPACE}/lib/create_stack.rb --stackname AMI \
+                                      --domain ${Domain} \
+                                      --templatelocation ${WORKSPACE}/infrastructure/target/production.template \
+                                      --application AMI \
+                                      --sshkey ${SSH_KEY} \
+                                      --s3bucket ${S3BUCKET} \
+                                      --securitygroup ${SGID} \
+                                      --snstopic ${SNS_TOPIC}
+
+# Load SimpleDB Domain with Key/Value Pairs
+ruby ${WORKSPACE}/lib/load_domain.rb --filename ${STACK_NAME} \
+                                     --itemname ${STACK_NAME}
+
+# Pull and store variables from SimpleDB
+host=`ruby ${WORKSPACE}/lib/showback_domain.rb --item ${STACK_NAME} \
+                                               --key InstanceIPAddress`
+
+# Run Acceptance Tests
+cucumber ${WORKSPACE}/infrastructure/target/features/production.feature host=${host} user=ec2-user key=/usr/share/tomcat6/.ssh/id_rsa
+
+# AMI the instance
+</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>
