@@ -58,8 +58,14 @@ BASE_AMI=`ruby ${WORKSPACE}/lib/showback_domain.rb --item ami \
 # Set Domain Name
 Domain=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
                                                  --key DOMAIN`
+
+# Set CFN Group ID
+Group=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
+                                                 --key GROUP`
+
 # Create Cloudformaton Stack
 ruby ${WORKSPACE}/lib/create_stack.rb --stackname AMI-${BUILD_NUMBER} \
+                                      --group ${Group} \
                                       --domain ${Domain} \
                                       --scriptedorami SCRIPTED \
                                       --ami ${BASE_AMI} \
