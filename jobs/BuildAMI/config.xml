@@ -81,9 +81,6 @@ host=`ruby ${WORKSPACE}/lib/showback_domain.rb --item AMI-${BUILD_NUMBER} \
 # Run Infrastructure Acceptance Tests
 cucumber ${WORKSPACE}/infrastructure/target/features/production.feature host=${host} user=ec2-user key=/usr/share/tomcat6/.ssh/id_rsa
 
-# Run Deployment Acceptance Tests
-cucumber ${WORKSPACE}/deployment/features/deployment.feature host=${host} user=ec2-user key=/usr/share/tomcat6/.ssh/id_rsa
-
 # AMI the instance
 ruby ${WORKSPACE}/lib/create_ami.rb --stackname AMI-${BUILD_NUMBER} \
                                     --imagename AMI-${BUILD_NUMBER}
