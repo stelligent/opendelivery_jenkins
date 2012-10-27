@@ -21,7 +21,7 @@ best practice to use this job for terminating target stacks</description>
       <hudson.plugins.git.UserRemoteConfig>
         <name></name>
         <refspec></refspec>
-        <url>https://github.com/stelligent/continuous_delivery_open_platform.git</url>
+        <url>git@github.com:stelligent/open_delivery_havoc.git</url>
       </hudson.plugins.git.UserRemoteConfig>
     </userRemoteConfigs>
     <branches>

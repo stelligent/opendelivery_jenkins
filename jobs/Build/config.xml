@@ -1,9 +1,13 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions/>
-  <description>This is the build for the common-step-definitions gem. It builds the gem and then pushes it up to s3.</description>
+  <description></description>
   <keepDependencies>false</keepDependencies>
-  <properties/>
+  <properties>
+    <com.coravy.hudson.plugins.github.GithubProjectProperty>
+      <projectUrl>https://github.com/stelligent/havoc_compute.git/</projectUrl>
+    </com.coravy.hudson.plugins.github.GithubProjectProperty>
+  </properties>
   <scm class="hudson.plugins.git.GitSCM">
     <configVersion>2</configVersion>
     <userRemoteConfigs>
@@ -23,7 +27,7 @@
     <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
     <authorOrCommitter>false</authorOrCommitter>
     <clean>false</clean>
-    <wipeOutWorkspace>false</wipeOutWorkspace>
+    <wipeOutWorkspace>true</wipeOutWorkspace>
     <pruneBranches>false</pruneBranches>
     <remotePoll>false</remotePoll>
     <ignoreNotifyCommit>false</ignoreNotifyCommit>
@@ -46,16 +50,19 @@
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
   <triggers class="vector">
-    <hudson.triggers.SCMTrigger>
-      <spec>0 * * * *</spec>
-    </hudson.triggers.SCMTrigger>
+    <com.cloudbees.jenkins.GitHubPushTrigger>
+      <spec></spec>
+    </com.cloudbees.jenkins.GitHubPushTrigger>
   </triggers>
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>gem build gems/common-step-definitions/common-step-definitions.gemspec
+      <command>git clone git@github.com:stelligent/havoc_compute.git
 
-ruby ${WORKSPACE}/lib/s3_upload.rb --filename common-step-definitions-1.0.0.gem --bucket ${S3BUCKET} --key gems/common-step-definitions-1.0.0.gem</command>
+tar -czvf havoc_compute.tar.gz havoc_compute/*
+
+ruby ${WORKSPACE}/lib/s3_upload.rb --filename havoc_compute.tar.gz --bucket ${S3BUCKET} --key havoc_compute.tar.gz
+</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>
