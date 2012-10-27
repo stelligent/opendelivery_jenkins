@@ -3,7 +3,7 @@
   <helpRedirect/>
   <hudsonUrl>http://ec2-204-236-228-3.compute-1.amazonaws.com:8080/jenkins/</hudsonUrl>
   <smtpAuthUsername>buildservers@gmail.com</smtpAuthUsername>
-  <smtpAuthPassword>muq1R1vlxAROZq4oPmNZZfWdkrXx0mYfirHEDyuKoOSHUAdVXk/Yk8MiU02wsJR4XZlOnld1CBFeuIISAqckIRbuAVIb+7imabv9G8meKwx3WXoe0NDg5HipesqGwq8TUh+q3EVcTVcS+730BSSgxOjP44pKf/vIa/iToEFrZyumpDkWpd5zvxXGit7VLT7npOWQailecI2UO2xTrmPSr6BRlbj0FFeVmTvjaZh2oBXBZVJBRHbxItnuCVUdueaF7jZzH9uLPnMl1p7MRaXSCygWfzdWYHT7AYBSLRAlBsjTNr/0iwl/gppJlk81+/i68JoVs4i1NXcCQ4F1AxWd8Q==</smtpAuthPassword>
+  <smtpAuthPassword>YgRafWnw6ZD6sRquVHOEcPOkAk6AicqlFD7OQdZK73JJ+jWqbPrDV08BEHnArBinMExcywfjeC2xUX+XdOp2BSxuhh84tx2lWvWVTaBOgFsG1gJ54zx8KIv/fNk0CGpMYI0aaF7Ho3ClTqOwoMlEFKrSndyzdi0Tl6+nUNQz6ma9TQ3DcaEULK+7kElJespJEdJK/BHTVtfAz3aoC4xCCF+F5oxyabQE60107o4miDcao7SHbvUFwpaqhnDb3PLPG+GEzi6ch4oBH8fouq1s8Y0z+69uyqSDhT/tZMdlQyS3BHYZTK4QsDjdeKs4padehxa7HWTjhiKuF5Y4ICeFDBxIfZMPNmYtzAHI35WWjyComD8336IiTbPI28r5HBYWkPoIVF47R15U1NrjU+KZGzbcH11vDNcxnuapTezLM2vM2h0wKOF57rdGckhVVJ8lopUkO+s9lNxv2qWfhCpdcLSP8VsuVXcm3QaE20IjwRk=</smtpAuthPassword>
   <adminAddress>brian.jakovich@stelligent.com</adminAddress>
   <smtpHost>smtp.gmail.com</smtpHost>
   <useSsl>true</useSsl>
