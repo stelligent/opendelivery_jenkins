@@ -10,7 +10,7 @@
       <hudson.plugins.git.UserRemoteConfig>
         <name></name>
         <refspec></refspec>
-        <url>git@github.com:stelligent/open_delivery_havoc.git</url>
+        <url>git@github.com:stelligent/havoc_compute_platform.git</url>
       </hudson.plugins.git.UserRemoteConfig>
     </userRemoteConfigs>
     <branches>
@@ -52,16 +52,22 @@
       <command># Set SSH Key
 SSH_KEY=development
 
-# Set AMI ID
+# Get AMI ID
 BASE_AMI=`ruby ${WORKSPACE}/lib/showback_domain.rb --item ami \
                                                  --key base`
-# Set Domain Name
+# Get Domain Name
 Domain=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
-                                                 --key DOMAIN`
-
-# Set CFN Group ID
+                                                 --key Domain`
+# Get CFN Group ID
 Group=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
                                                  --key GROUP`
+# Get S3 Bucket
+S3Bucket=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
+                                                   --key S3Bucket`
+# Get Security Group ID
+SecurityGroupId=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
+                                                          --key SGID`
+
 
 # Create Cloudformaton Stack
 ruby ${WORKSPACE}/lib/create_stack.rb --stackname AMI-${BUILD_NUMBER} \
@@ -72,8 +78,8 @@ ruby ${WORKSPACE}/lib/create_stack.rb --stackname AMI-${BUILD_NUMBER} \
                                       --templatelocation ${WORKSPACE}/infrastructure/target/production.template \
                                       --application AMI-${BUILD_NUMBER} \
                                       --sshkey ${SSH_KEY} \
-                                      --s3bucket ${S3BUCKET} \
-                                      --securitygroup ${SGID} \
+                                      --s3bucket ${S3Bucket} \
+                                      --securitygroup ${SecurityGroupId} \
                                       --snstopic ${SNS_TOPIC}
 
 # Load SimpleDB Domain with Key/Value Pairs

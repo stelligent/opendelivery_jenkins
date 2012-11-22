@@ -10,7 +10,7 @@
       <hudson.plugins.git.UserRemoteConfig>
         <name></name>
         <refspec></refspec>
-        <url>git@github.com:stelligent/open_delivery_havoc.git</url>
+        <url>git@github.com:stelligent/havoc_compute_platform.git</url>
       </hudson.plugins.git.UserRemoteConfig>
     </userRemoteConfigs>
     <branches>
@@ -49,12 +49,26 @@
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>cd infrastructure/puppet
+      <command># Get S3 Bucket
+S3Bucket=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
+                                                   --key S3Bucket`
+cd infrastructure/puppet
 tar -czvf puppet.tar.gz modules/* manifests/*
 
-ruby ${WORKSPACE}/lib/s3_upload.rb --filename puppet.tar.gz --bucket ${S3BUCKET} --key puppet.tar.gz</command>
+ruby ${WORKSPACE}/lib/s3_upload.rb --filename puppet.tar.gz --bucket ${S3Bucket} --key puppet.tar.gz</command>
     </hudson.tasks.Shell>
   </builders>
-  <publishers/>
+  <publishers>
+    <hudson.plugins.parameterizedtrigger.BuildTrigger>
+      <configs>
+        <hudson.plugins.parameterizedtrigger.BuildTriggerConfig>
+          <configs class="java.util.Collections$EmptyList"/>
+          <projects>BuildAMI, </projects>
+          <condition>SUCCESS</condition>
+          <triggerWithNoParameters>true</triggerWithNoParameters>
+        </hudson.plugins.parameterizedtrigger.BuildTriggerConfig>
+      </configs>
+    </hudson.plugins.parameterizedtrigger.BuildTrigger>
+  </publishers>
   <buildWrappers/>
 </project>

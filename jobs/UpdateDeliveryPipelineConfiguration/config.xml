@@ -12,12 +12,27 @@
           <defaultValue></defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
-          <name>DOMAIN</name>
+          <name>Domain</name>
           <description></description>
           <defaultValue></defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
-          <name>PRODUCTION_DATABASE_IP</name>
+          <name>ProductionDatabaseIP</name>
+          <description></description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>ProductionDatabaseUsername</name>
+          <description></description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>ProductionDatabaseName</name>
+          <description></description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>ProductionDatabasePassword</name>
           <description></description>
           <defaultValue></defaultValue>
         </hudson.model.StringParameterDefinition>
@@ -30,7 +45,7 @@
       <hudson.plugins.git.UserRemoteConfig>
         <name></name>
         <refspec></refspec>
-        <url>git@github.com:stelligent/open_delivery_havoc.git</url>
+        <url>git@github.com:stelligent/havoc_compute_platform.git</url>
       </hudson.plugins.git.UserRemoteConfig>
     </userRemoteConfigs>
     <branches>
@@ -78,23 +93,57 @@ else
 echo &quot;staying the same&quot;
 fi
 
-if [ -n &quot;${DOMAIN}&quot; ]
+if [ -n &quot;${Domain}&quot; ]
 then
-ruby ${WORKSPACE}/lib/set_properties.rb --property DOMAIN \
-                                        --value ${DOMAIN} \
+ruby ${WORKSPACE}/lib/set_properties.rb --property Domain \
+                                        --value ${Domain} \
                                         --itemname properties
 else
 echo &quot;staying the same&quot;
 fi
 
-if [ -n &quot;${PRODUCTION_DATABASE_IP}&quot; ]
+if [ -n &quot;${ProductionDatabaseIP}&quot; ]
 then
-ruby ${WORKSPACE}/lib/set_properties.rb --property PRODUCTION_DATABASE_IP \
-                                        --value ${PRODUCTION_DATABASE_IP} \
+ruby ${WORKSPACE}/lib/set_properties.rb --property ProductionDatabaseIP \
+                                        --value ${ProductionDatabaseIP} \
                                         --itemname properties
 else
 echo &quot;staying the same&quot;
-fi</command>
+fi
+
+
+if [ -n &quot;${ProductionDatabaseUsername}&quot; ]
+then
+ruby ${WORKSPACE}/lib/set_properties.rb --property ProductionDatabaseUsername \
+                                        --value ${ProductionDatabaseUsername} \
+                                        --itemname properties
+else
+echo &quot;staying the same&quot;
+fi
+
+
+
+if [ -n &quot;${ProductionDatabaseName}&quot; ]
+then
+ruby ${WORKSPACE}/lib/set_properties.rb --property ProductionDatabaseName \
+                                        --value ${ProductionDatabaseName} \
+                                        --itemname properties
+else
+echo &quot;staying the same&quot;
+fi
+
+
+
+if [ -n &quot;${ProductionDatabasePassword}&quot; ]
+then
+ruby ${WORKSPACE}/lib/set_properties.rb --property ProductionDatabasePassword \
+                                        --value ${ProductionDatabasePassword} \
+                                        --itemname properties
+else
+echo &quot;staying the same&quot;
+fi
+
+  </command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>

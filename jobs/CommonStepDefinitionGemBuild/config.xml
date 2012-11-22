@@ -10,7 +10,7 @@
       <hudson.plugins.git.UserRemoteConfig>
         <name></name>
         <refspec></refspec>
-        <url>git@github.com:stelligent/open_delivery_havoc.git</url>
+        <url>git@github.com:stelligent/havoc_compute_platform.git</url>
       </hudson.plugins.git.UserRemoteConfig>
     </userRemoteConfigs>
     <branches>
@@ -53,9 +53,13 @@
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>gem build gems/common-step-definitions/common-step-definitions.gemspec
+      <command># Get S3 Bucket
+S3Bucket=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
+                                                   --key S3Bucket`
 
-ruby ${WORKSPACE}/lib/s3_upload.rb --filename common-step-definitions-1.0.0.gem --bucket ${S3BUCKET} --key gems/common-step-definitions-1.0.0.gem</command>
+gem build gems/common-step-definitions/common-step-definitions.gemspec
+
+ruby ${WORKSPACE}/lib/s3_upload.rb --filename common-step-definitions-1.0.0.gem --bucket ${S3Bucket} --key gems/common-step-definitions-1.0.0.gem</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>
