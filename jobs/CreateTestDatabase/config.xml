@@ -49,26 +49,35 @@
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command># Get S3 Bucket
-S3Bucket=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
-                                                   --key S3Bucket`
-cd infrastructure/puppet
-tar -czvf puppet.tar.gz modules/* manifests/*
+      <command># Get Security Group ID and transform into name
+SecurityGroupId=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
+                                                          --key SGID`
 
-ruby ${WORKSPACE}/lib/s3_upload.rb --filename puppet.tar.gz --bucket ${S3Bucket} --key puppet.tar.gz</command>
+SecurityGroupName=`ruby ${WORKSPACE}/lib/return_security_group_name.rb --securityGroupId ${SecurityGroupId}`
+
+# Get Security Group Owner ID
+SecurityGroupOwnerId=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
+                                                               --key SGIDOwner`
+
+DBUSER=test
+DBPASSWORD=test
+DBNAME=test
+
+
+# Create test Database
+ruby ${WORKSPACE}/lib/create_database.rb --stackname HavocTestDatabase \
+                                         --templatelocation ${WORKSPACE}/infrastructure/target/database.template \
+                                         --securityGroupOwner ${SecurityGroupOwnerId} \
+                                         --securityGroup ${SecurityGroupId} \
+                                         --dbName ${DBNAME} \
+                                         --dbUser ${DBUSER} \
+                                         --dbPassword ${DBPASSWORD}
+
+# Load SimpleDB Domain with Key/Value Pairs for Test Database
+ruby ${WORKSPACE}/lib/load_domain.rb --filename HavocTestDatabase \
+                                     --itemname HavocTestDatabase</command>
     </hudson.tasks.Shell>
   </builders>
-  <publishers>
-    <hudson.plugins.parameterizedtrigger.BuildTrigger>
-      <configs>
-        <hudson.plugins.parameterizedtrigger.BuildTriggerConfig>
-          <configs class="java.util.Collections$EmptyList"/>
-          <projects>BuildAMI, </projects>
-          <condition>SUCCESS</condition>
-          <triggerWithNoParameters>true</triggerWithNoParameters>
-        </hudson.plugins.parameterizedtrigger.BuildTriggerConfig>
-      </configs>
-    </hudson.plugins.parameterizedtrigger.BuildTrigger>
-  </publishers>
+  <publishers/>
   <buildWrappers/>
 </project>

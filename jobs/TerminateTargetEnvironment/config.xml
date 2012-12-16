@@ -63,7 +63,7 @@ best practice to use this job for terminating target stacks</description>
       <command>ruby ${WORKSPACE}/lib/delete_domain.rb --domain ${STACK_NAME}
 ruby ${WORKSPACE}/lib/delete_stack.rb --stackname ${STACK_NAME}
 ruby ${WORKSPACE}/lib/delete_stack.rb --stackname ${STACK_NAME}-DATABASE
-</command>
+ruby ${WORKSPACE}/lib/delete_key.rb --stackname ${STACK_NAME}</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>

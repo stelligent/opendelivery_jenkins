@@ -11,19 +11,9 @@ Click Build and Jenkins will do the rest!&#xd;
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
         <hudson.model.StringParameterDefinition>
-          <name>BLUE_IP</name>
-          <description></description>
-          <defaultValue>107.20.245.112</defaultValue>
-        </hudson.model.StringParameterDefinition>
-        <hudson.model.StringParameterDefinition>
-          <name>CNAME</name>
-          <description></description>
-          <defaultValue>prod</defaultValue>
-        </hudson.model.StringParameterDefinition>
-        <hudson.model.StringParameterDefinition>
-          <name>DOMAIN</name>
-          <description></description>
-          <defaultValue>oneclickdeployment.com</defaultValue>
+          <name>LoadBalancerDNS</name>
+          <description>Pre production stack name</description>
+          <defaultValue></defaultValue>
         </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
@@ -37,9 +27,7 @@ Click Build and Jenkins will do the rest!&#xd;
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>route53 --zone ${DOMAIN}. -g --name ${CNAME}.${DOMAIN}. --type A --ttl 600 --values ${BLUE_IP}
-
-echo ${CNAME}.${DOMAIN}.</command>
+      <command>route53 --zone stelligent.com. -g --name havoc.stelligent.com. --type CNAME --ttl 600 --values ${LoadBalancerDNS}</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>

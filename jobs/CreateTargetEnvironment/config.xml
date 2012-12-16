@@ -4,6 +4,7 @@
   <description>The Target Environment job is used to create a new AWS Cloudformation stack that is ready to accept a new Application Deployment. This job is run as part of &#xd;
 the &lt;b&gt;&lt;a href=&quot;/jenkins/view/DeliveryPipeline/&quot;&gt;DeliveryPipeline&lt;/a&gt;&lt;/b&gt;</description>
   <keepDependencies>false</keepDependencies>
+  <properties/>
   <scm class="hudson.plugins.git.GitSCM">
     <configVersion>2</configVersion>
     <userRemoteConfigs>
@@ -54,47 +55,89 @@ then
  SSH_KEY=production
  ApplicationName=${STACK_NAME}
  STAGE=production
+
+ # Get Domain Name
+ Domain=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
+                                                  --key ProductionDomain`
+
+ # Get Min and Max Autoscaling Group Sizes
+ MinSize=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
+                                                   --key ProductionAutoscalingGroupMinSize`
+ 
+ # Get Domain Name
+ MaxSize=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
+                                                   --key ProductionAutoscalingGroupMaxSize`
+
+ # Get Instance Type
+ InstanceType=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
+                                                        --key InstanceType`
 else
- SSH_KEY=development
+
+ # Create Private Key
+ ruby ${WORKSPACE}/lib/create_key.rb --stackname ${STACK_NAME}
+
+ SSH_KEY=${STACK_NAME}
  ApplicationName=${STACK_NAME}
- STAGE=development
+ STAGE=staging
+
+ # Get Domain Name
+ Domain=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
+                                                  --key DevelopmentDomain`
+ # Set Staging Database properties
+ DBUSER=transient
+ DBPASSWORD=transient
+ DBNAME=eops
+
+ ruby ${WORKSPACE}/lib/set_properties.rb --itemname ${STACK_NAME} \
+                                         --property DBUSER \
+                                         --value ${DBUSER}
+
+ ruby ${WORKSPACE}/lib/set_properties.rb --itemname ${STACK_NAME} \
+                                         --property DBPASSWORD \
+                                         --value ${DBPASSWORD}
+
+ ruby ${WORKSPACE}/lib/set_properties.rb --itemname ${STACK_NAME} \
+                                         --property DBNAME \
+                                         --value ${DBNAME}
+
+ # Get Min and Max Autoscaling Group Sizes
+ MinSize=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
+                                                   --key DevelopmentAutoscalingGroupMinSize`
+ 
+ # Get Domain Name
+ MaxSize=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
+                                                   --key DevelopmentAutoscalingGroupMaxSize`
+ # Get Instance Type
+ InstanceType=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
+                                                        --key InstanceType`
 fi
 
-# Set Development Database properties
-DBUSER=transient
-DBPASSWORD=transient
-DBNAME=eops
-
-ruby ${WORKSPACE}/lib/set_properties.rb --itemname ${STACK_NAME} \
-                                        --property DBUSER \
-                                        --value ${DBUSER}
-
-ruby ${WORKSPACE}/lib/set_properties.rb --itemname ${STACK_NAME} \
-                                        --property DBPASSWORD \
-                                        --value ${DBPASSWORD}
-
-ruby ${WORKSPACE}/lib/set_properties.rb --itemname ${STACK_NAME} \
-                                        --property DBNAME \
-                                        --value ${DBNAME}
+# Get Language
+Language=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
+                                                   --key Language`
 
 # Get AMI ID
 LATEST_AMI=`ruby ${WORKSPACE}/lib/showback_domain.rb --item ami \
-                                                 --key latest`
-# Get Domain Name
-Domain=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
-                                                 --key Domain`
+                                                     --key latest`
 # Get CFN Group ID
 Group=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
-                                                 --key GROUP`
+                                                --key GROUP`
 # Get S3 Bucket
 S3Bucket=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
                                                    --key S3Bucket`
-# Get Security Group ID
+# Get Security Group ID and transform into name
 SecurityGroupId=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
                                                           --key SGID`
+
+SecurityGroupName=`ruby ${WORKSPACE}/lib/return_security_group_name.rb --securityGroupId ${SecurityGroupId}`
+
 # Get Security Group Owner ID
 SecurityGroupOwnerId=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
-                                                   --key SGIDOwner`
+                                                               --key SGIDOwner`
+
+# Get SSL Certificate ARN
+SSLCertificateArn=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
+                                                            --key SSLCertificateArn`
 
 # Create Cloudformaton Stack
 ruby ${WORKSPACE}/lib/create_stack.rb --stackname ${STACK_NAME} \
@@ -106,49 +149,64 @@ ruby ${WORKSPACE}/lib/create_stack.rb --stackname ${STACK_NAME} \
                                       --application ${ApplicationName} \
                                       --sshkey ${SSH_KEY} \
                                       --s3bucket ${S3Bucket} \
-                                      --securitygroup ${SecurityGroupId} \
-                                      --snstopic ${SNS_TOPIC}
+                                      --securitygroup ${SecurityGroupName} \
+                                      --snstopic ${SNS_TOPIC} \
+                                      --sslcertificatearn ${SSLCertificateArn} \
+                                      --language ${Language} \
+                                      --minsize ${MinSize} \
+                                      --maxsize ${MaxSize} \
+                                      --instancesize ${InstanceType}
 
 # Load SimpleDB Domain with Key/Value Pairs for Application Stack
 ruby ${WORKSPACE}/lib/load_domain.rb --filename ${STACK_NAME} \
                                      --itemname ${STACK_NAME}
 
-# Create development Database
-ruby ${WORKSPACE}/lib/create_database.rb --stackname ${STACK_NAME}-DATABASE \
-                                         --templatelocation ${WORKSPACE}/infrastructure/target/database.template \
-                                         --securityGroupOwner ${SecurityGroupOwnerId} \
-                                         --securityGroup ${SecurityGroupId} \
-                                         --dbName ${DBNAME} \
-                                         --dbUser ${DBUSER} \
-                                         --dbPassword ${DBPASSWORD}
+if [ $deployToProduction == true ]
+then
+ DBUSER=&quot;PRIVATE&quot;
+ DBPASSWORD=&quot;PRVIATE&quot;
+ Endpoint=&quot;PRIVATE&quot;
+else
+ # Create staging Database
+ ruby ${WORKSPACE}/lib/create_database.rb --stackname ${STACK_NAME}-DATABASE \
+                                          --templatelocation ${WORKSPACE}/infrastructure/target/database.template \
+                                          --securityGroupOwner ${SecurityGroupOwnerId} \
+                                          --securityGroup ${SecurityGroupId} \
+                                          --dbName ${DBNAME} \
+                                          --dbUser ${DBUSER} \
+                                          --dbPassword ${DBPASSWORD}
 
-# Load SimpleDB Domain with Key/Value Pairs for Database
-ruby ${WORKSPACE}/lib/load_domain.rb --filename ${STACK_NAME}-DATABASE \
-                                     --itemname ${STACK_NAME}
+ # Load SimpleDB Domain with Key/Value Pairs for Database
+ ruby ${WORKSPACE}/lib/load_domain.rb --filename ${STACK_NAME}-DATABASE \
+                                      --itemname ${STACK_NAME}
 
-# Get Application Stack Instance IP Address
-Host=`ruby ${WORKSPACE}/lib/showback_domain.rb --item ${STACK_NAME} \
-                                               --key InstanceIPAddress`
+ # Get database Endpoint
+ Endpoint=`ruby ${WORKSPACE}/lib/showback_domain.rb --item ${STACK_NAME} \
+                                                    --key DatabaseEndpoint`
+fi
 
-# Get database Endpoint
-Endpoint=`ruby ${WORKSPACE}/lib/showback_domain.rb --item ${STACK_NAME} \
-                                               --key DatabaseEndpoint`
+# Get Application Stack Instance Autoscaling Group
+AutoScalingGroup=`ruby ${WORKSPACE}/lib/showback_domain.rb --item ${STACK_NAME} \
+                                                           --key AutoscalingGroup`
+
+# Get first Instance in Autoscaling Group&apos;s IP address
+HOST=`ruby ${WORKSPACE}/lib/return_instance_in_as_group.rb --autoscalingGroup ${AutoScalingGroup}`
 
 # Run Acceptance Tests
-cucumber ${WORKSPACE}/infrastructure/target/features/production.feature host=${Host} user=ec2-user key=/usr/share/tomcat6/.ssh/id_rsa
+cucumber ${WORKSPACE}/infrastructure/target/features/production.feature host=${HOST} user=ec2-user key=/usr/share/tomcat6/.ssh/id_rsa
 
-# Publish notifications to SNS
-sns-publish --topic-arn $SNS_TOPIC \
-            --subject &quot;New Environment Ready&quot; \
-            --message &quot;Your new environment is ready. IP Address: $Host. An example command to ssh into the box would be: ssh -i development.pem ec2-user@$Host This instance was created by $JENKINS_DOMAIN
-
-CloudFormation Stack Name: ${STACK_NAME}
-Route53 Domain: ${Domain}
-Application: ${ApplicationName}
-Full Domain: ${ApplicationName}.${Domain}
-Database Endpoint: ${Endpoint}
-Database Username: ${DBUSER}
-Database Password: ${DBPASSWORD}&quot; --aws-credential-file /usr/share/tomcat6/aws_access</command>
+if [ $deployToProduction == false ]
+then
+ # Send email to user
+ ruby ${WORKSPACE}/lib/send_env_email.rb --email ${EMAIL}\
+                                         --stackname ${STACK_NAME}\
+                                         --domain ${Domain}\
+                                         --databaseEndpoint ${Endpoint} \
+                                         --databaseUsername ${DBUSER} \
+                                         --databasePassword ${DBPASSWORD} \
+                                         --ipaddress ${HOST} \
+                                         --sender havoc@stelligent.com
+fi</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers>

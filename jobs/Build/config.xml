@@ -49,17 +49,45 @@
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>S3BUCKET=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
+      <command># Get S3 Bucket
+S3Bucket=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
                                                    --key S3Bucket`
-
+# Git clone application code
 git clone git@github.com:stelligent/havoc_compute.git
 
-tar -czvf havoc_compute.tar.gz havoc_compute/*
+# Run unit tests
+# cd havoc_compute/
+# sudo bundle install
+# rake
 
-ruby ${WORKSPACE}/lib/s3_upload.rb --filename havoc_compute.tar.gz --bucket ${S3BUCKET} --key havoc_compute.tar.gz
-</command>
+cd ${WORKSPACE}
+
+# Create tar.gz of each artifact
+tar -czvf havoc_compute.tar.gz havoc_compute/*
+tar -czvf capistrano.tar.gz deployment/*
+
+# Change to puppet Directory
+cd infrastructure/puppet
+tar -czvf puppet.tar.gz modules/* manifests/*
+
+# Change to workspace directory
+cd ${WORKSPACE}
+
+# Push artifacts up to S3
+ruby ${WORKSPACE}/lib/s3_upload.rb --filename havoc_compute.tar.gz                 --bucket ${S3Bucket} --key havoc_compute.tar.gz
+ruby ${WORKSPACE}/lib/s3_upload.rb --filename capistrano.tar.gz                    --bucket ${S3Bucket} --key capistrano.tar.gz
+ruby ${WORKSPACE}/lib/s3_upload.rb --filename infrastructure/puppet/puppet.tar.gz  --bucket ${S3Bucket} --key puppet.tar.gz</command>
     </hudson.tasks.Shell>
   </builders>
-  <publishers/>
+  <publishers>
+    <hudson.tasks.BuildTrigger>
+      <childProjects>BuildAMI</childProjects>
+      <threshold>
+        <name>SUCCESS</name>
+        <ordinal>0</ordinal>
+        <color>BLUE</color>
+      </threshold>
+    </hudson.tasks.BuildTrigger>
+  </publishers>
   <buildWrappers/>
 </project>

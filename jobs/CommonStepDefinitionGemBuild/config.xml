@@ -59,7 +59,7 @@ S3Bucket=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
 
 gem build gems/common-step-definitions/common-step-definitions.gemspec
 
-ruby ${WORKSPACE}/lib/s3_upload.rb --filename common-step-definitions-1.0.0.gem --bucket ${S3Bucket} --key gems/common-step-definitions-1.0.0.gem</command>
+ruby ${WORKSPACE}/lib/s3_upload.rb --filename common-step-definitions-1.0.0.gem --bucket ${S3Bucket} --key resources/gems/common-step-definitions-1.0.0.gem</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>

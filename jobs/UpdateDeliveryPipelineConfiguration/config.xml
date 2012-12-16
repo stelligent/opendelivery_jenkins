@@ -12,11 +12,6 @@
           <defaultValue></defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
-          <name>Domain</name>
-          <description></description>
-          <defaultValue></defaultValue>
-        </hudson.model.StringParameterDefinition>
-        <hudson.model.StringParameterDefinition>
           <name>ProductionDatabaseIP</name>
           <description></description>
           <defaultValue></defaultValue>
@@ -36,6 +31,119 @@
           <description></description>
           <defaultValue></defaultValue>
         </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>DevelopmentStripeSecretKey</name>
+          <description></description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>DevelopmentStripePublicKey</name>
+          <description></description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>ProductionStripePublicKey</name>
+          <description></description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>ProductionStripeSecretKey</name>
+          <description></description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>LogglyUrl</name>
+          <description></description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>SESUsername</name>
+          <description></description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>SESPassword</name>
+          <description></description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>SESMailer</name>
+          <description></description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>ProductionRedisDomain</name>
+          <description></description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>DevelopmentDomain</name>
+          <description></description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>ProductionDomain</name>
+          <description></description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>SSLCertificateArn</name>
+          <description></description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>S3Bucket</name>
+          <description></description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>ProductionAutoscalingGroupMinSize</name>
+          <description>The default is 2</description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>ProductionAutoscalingGroupMaxSize</name>
+          <description>The default is 2</description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>DevelopmentAutoscalingGroupMinSize</name>
+          <description>The Default is 1</description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>DevelopmentAutoscalingGroupMaxSize</name>
+          <description>The Default is 1</description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.ChoiceParameterDefinition>
+          <name>Language</name>
+          <description></description>
+          <choices class="java.util.Arrays$ArrayList">
+            <a class="string-array">
+              <string></string>
+              <string>rails</string>
+              <string>java</string>
+            </a>
+          </choices>
+        </hudson.model.ChoiceParameterDefinition>
+        <hudson.model.ChoiceParameterDefinition>
+          <name>InstanceType</name>
+          <description></description>
+          <choices class="java.util.Arrays$ArrayList">
+            <a class="string-array">
+              <string></string>
+              <string>t1.micro</string>
+              <string>m1.small</string>
+              <string>m1.medium</string>
+              <string>m1.large</string>
+              <string>m1.xlarge</string>
+              <string>m2.xlarge</string>
+              <string>m2.2xlarge</string>
+              <string>m2.4xlarge</string>
+            </a>
+          </choices>
+        </hudson.model.ChoiceParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -93,10 +201,10 @@ else
 echo &quot;staying the same&quot;
 fi
 
-if [ -n &quot;${Domain}&quot; ]
+if [ -n &quot;${DevelopmentDomain}&quot; ]
 then
-ruby ${WORKSPACE}/lib/set_properties.rb --property Domain \
-                                        --value ${Domain} \
+ruby ${WORKSPACE}/lib/set_properties.rb --property DevelopmentDomain \
+                                        --value ${DevelopmentDomain} \
                                         --itemname properties
 else
 echo &quot;staying the same&quot;
@@ -143,7 +251,159 @@ else
 echo &quot;staying the same&quot;
 fi
 
-  </command>
+if [ -n &quot;${DevelopmentStripeSecretKey}&quot; ]
+then
+ruby ${WORKSPACE}/lib/set_properties.rb --property DevelopmentStripeSecretKey \
+                                        --value ${DevelopmentStripeSecretKey} \
+                                        --itemname properties
+else
+echo &quot;staying the same&quot;
+fi
+
+if [ -n &quot;${DevelopmentStripePublicKey}&quot; ]
+then
+ruby ${WORKSPACE}/lib/set_properties.rb --property DevelopmentStripePublicKey \
+                                        --value ${DevelopmentStripePublicKey} \
+                                        --itemname properties
+else
+echo &quot;staying the same&quot;
+fi
+
+if [ -n &quot;${ProductionStripePublicKey}&quot; ]
+then
+ruby ${WORKSPACE}/lib/set_properties.rb --property ProductionStripePublicKey \
+                                        --value ${ProductionStripePublicKey} \
+                                        --itemname properties
+else
+echo &quot;staying the same&quot;
+fi
+
+if [ -n &quot;${LogglyUrl}&quot; ]
+then
+ruby ${WORKSPACE}/lib/set_properties.rb --property LogglyUrl \
+                                        --value ${LogglyUrl} \
+                                        --itemname properties
+else
+echo &quot;staying the same&quot;
+fi
+
+if [ -n &quot;${SESUsername}&quot; ]
+then
+ruby ${WORKSPACE}/lib/set_properties.rb --property SESUsername \
+                                        --value ${SESUsername} \
+                                        --itemname properties
+else
+echo &quot;staying the same&quot;
+fi
+
+if [ -n &quot;${SESPassword}&quot; ]
+then
+ruby ${WORKSPACE}/lib/set_properties.rb --property SESPassword \
+                                        --value ${SESPassword} \
+                                        --itemname properties
+else
+echo &quot;staying the same&quot;
+fi
+
+
+if [ -n &quot;${SESMailer}&quot; ]
+then
+ruby ${WORKSPACE}/lib/set_properties.rb --property SESMailer \
+                                        --value ${SESMailer} \
+                                        --itemname properties
+else
+echo &quot;staying the same&quot;
+fi
+
+if [ -n &quot;${ProductionRedisDomain}&quot; ]
+then
+ruby ${WORKSPACE}/lib/set_properties.rb --property ProductionRedisDomain \
+                                        --value ${ProductionRedisDomain} \
+                                        --itemname properties
+else
+echo &quot;staying the same&quot;
+fi
+
+if [ -n &quot;${ProductionDomain}&quot; ]
+then
+ruby ${WORKSPACE}/lib/set_properties.rb --property ProductionDomain \
+                                        --value ${ProductionDomain} \
+                                        --itemname properties
+else
+echo &quot;staying the same&quot;
+fi
+
+if [ -n &quot;${SSLCertificateArn}&quot; ]
+then
+ruby ${WORKSPACE}/lib/set_properties.rb --property SSLCertificateArn \
+                                        --value ${SSLCertificateArn} \
+                                        --itemname properties
+else
+echo &quot;staying the same&quot;
+fi
+
+if [ -n &quot;${S3Bucket}&quot; ]
+then
+ruby ${WORKSPACE}/lib/set_properties.rb --property S3Bucket \
+                                        --value ${S3Bucket} \
+                                        --itemname properties
+else
+echo &quot;staying the same&quot;
+fi
+
+if [ -n &quot;${ProductionAutoscalingGroupMinSize}&quot; ]
+then
+ruby ${WORKSPACE}/lib/set_properties.rb --property ProductionAutoscalingGroupMinSize \
+                                        --value ${ProductionAutoscalingGroupMinSize} \
+                                        --itemname properties
+else
+echo &quot;staying the same&quot;
+fi
+
+if [ -n &quot;${ProductionAutoscalingGroupMaxSize}&quot; ]
+then
+ruby ${WORKSPACE}/lib/set_properties.rb --property ProductionAutoscalingGroupMaxSize \
+                                        --value ${ProductionAutoscalingGroupMaxSize} \
+                                        --itemname properties
+else
+echo &quot;staying the same&quot;
+fi
+
+if [ -n &quot;${DevelopmentAutoscalingGroupMinSize}&quot; ]
+then
+ruby ${WORKSPACE}/lib/set_properties.rb --property DevelopmentAutoscalingGroupMinSize \
+                                        --value ${DevelopmentAutoscalingGroupMinSize} \
+                                        --itemname properties
+else
+echo &quot;staying the same&quot;
+fi
+
+if [ -n &quot;${DevelopmentAutoscalingGroupMaxSize}&quot; ]
+then
+ruby ${WORKSPACE}/lib/set_properties.rb --property DevelopmentAutoscalingGroupMaxSize \
+                                        --value ${DevelopmentAutoscalingGroupMaxSize} \
+                                        --itemname properties
+else
+echo &quot;staying the same&quot;
+fi
+
+if [ -n &quot;${Language}&quot; ]
+then
+ruby ${WORKSPACE}/lib/set_properties.rb --property Language \
+                                        --value ${Language} \
+                                        --itemname properties
+else
+echo &quot;staying the same&quot;
+fi
+
+if [ -n &quot;${InstanceType}&quot; ]
+then
+ruby ${WORKSPACE}/lib/set_properties.rb --property InstanceType \
+                                        --value ${InstanceType} \
+                                        --itemname properties
+else
+echo &quot;staying the same&quot;
+fi</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>

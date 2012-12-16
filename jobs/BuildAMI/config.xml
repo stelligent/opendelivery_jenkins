@@ -49,25 +49,33 @@
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command># Set SSH Key
+      <command># Get Language
+Language=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
+                                                   --key Language`
+# Set SSH Key
 SSH_KEY=development
 
 # Get AMI ID
 BASE_AMI=`ruby ${WORKSPACE}/lib/showback_domain.rb --item ami \
-                                                 --key base`
+                                                   --key base`
 # Get Domain Name
 Domain=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
-                                                 --key Domain`
+                                                 --key ProductionDomain`
 # Get CFN Group ID
 Group=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
-                                                 --key GROUP`
+                                                --key GROUP`
 # Get S3 Bucket
 S3Bucket=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
                                                    --key S3Bucket`
-# Get Security Group ID
+# Get Security Group ID and transform into name
 SecurityGroupId=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
                                                           --key SGID`
 
+SecurityGroupName=`ruby ${WORKSPACE}/lib/return_security_group_name.rb --securityGroupId ${SecurityGroupId}`
+
+# Get SSL Certificate ARN
+SSLCertificateArn=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
+                                                            --key SSLCertificateArn`
 
 # Create Cloudformaton Stack
 ruby ${WORKSPACE}/lib/create_stack.rb --stackname AMI-${BUILD_NUMBER} \
@@ -79,28 +87,42 @@ ruby ${WORKSPACE}/lib/create_stack.rb --stackname AMI-${BUILD_NUMBER} \
                                       --application AMI-${BUILD_NUMBER} \
                                       --sshkey ${SSH_KEY} \
                                       --s3bucket ${S3Bucket} \
-                                      --securitygroup ${SecurityGroupId} \
-                                      --snstopic ${SNS_TOPIC}
+                                      --securitygroup ${SecurityGroupName} \
+                                      --snstopic ${SNS_TOPIC} \
+                                      --sslcertificatearn ${SSLCertificateArn} \
+                                      --language ${Language} \
+                                      --minsize 1 \
+                                      --maxsize 1 \
+                                      --instancesize m1.medium
 
 # Load SimpleDB Domain with Key/Value Pairs
 ruby ${WORKSPACE}/lib/load_domain.rb --filename AMI-${BUILD_NUMBER} \
                                      --itemname AMI-${BUILD_NUMBER}
 
-# Pull and store variables from SimpleDB
-host=`ruby ${WORKSPACE}/lib/showback_domain.rb --item AMI-${BUILD_NUMBER} \
-                                               --key InstanceIPAddress`
+# Get Application Stack Instance Autoscaling Group
+AutoScalingGroup=`ruby ${WORKSPACE}/lib/showback_domain.rb --item AMI-${BUILD_NUMBER} \
+                                                           --key AutoscalingGroup`
+
+# Get first Instance in Autoscaling Group&apos;s IP address
+HOST=`ruby ${WORKSPACE}/lib/return_instance_in_as_group.rb --autoscalingGroup ${AutoScalingGroup}`
 
 # Run Infrastructure Acceptance Tests
-cucumber ${WORKSPACE}/infrastructure/target/features/production.feature host=${host} user=ec2-user key=/usr/share/tomcat6/.ssh/id_rsa
+cucumber ${WORKSPACE}/infrastructure/target/features/production.feature host=${HOST} user=ec2-user key=/usr/share/tomcat6/.ssh/id_rsa
 
 # AMI the instance
-ruby ${WORKSPACE}/lib/create_ami.rb --stackname AMI-${BUILD_NUMBER} \
-                                    --imagename AMI-${BUILD_NUMBER}
-
-
-</command>
+ruby ${WORKSPACE}/lib/create_ami.rb --autoscalingGroup ${AutoScalingGroup} \
+                                    --imagename AMI-${BUILD_NUMBER}</command>
     </hudson.tasks.Shell>
   </builders>
-  <publishers/>
+  <publishers>
+    <hudson.tasks.BuildTrigger>
+      <childProjects>StartDeliveryPipeline</childProjects>
+      <threshold>
+        <name>SUCCESS</name>
+        <ordinal>0</ordinal>
+        <color>BLUE</color>
+      </threshold>
+    </hudson.tasks.BuildTrigger>
+  </publishers>
   <buildWrappers/>
 </project>
