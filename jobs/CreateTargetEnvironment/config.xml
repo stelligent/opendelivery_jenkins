@@ -57,19 +57,23 @@ then
  STAGE=production
 
  # Get Domain Name
- Domain=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
+ Domain=`ruby ${WORKSPACE}/lib/showback_domain.rb ---sdbdomain ${SIMPLEDB_STACK} \
+                                                  --item properties \
                                                   --key ProductionDomain`
 
  # Get Min and Max Autoscaling Group Sizes
- MinSize=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
+ MinSize=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                                   --item properties \
                                                    --key ProductionAutoscalingGroupMinSize`
  
  # Get Domain Name
- MaxSize=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
+ MaxSize=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                                   --item properties \
                                                    --key ProductionAutoscalingGroupMaxSize`
 
  # Get Instance Type
- InstanceType=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
+ InstanceType=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                                        --item properties \
                                                         --key InstanceType`
 else
 
@@ -81,62 +85,76 @@ else
  STAGE=staging
 
  # Get Domain Name
- Domain=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
+ Domain=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                                  --item properties \
                                                   --key DevelopmentDomain`
  # Set Staging Database properties
  DBUSER=transient
  DBPASSWORD=transient
  DBNAME=eops
 
- ruby ${WORKSPACE}/lib/set_properties.rb --itemname ${STACK_NAME} \
+ ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                         --itemname ${STACK_NAME} \
                                          --property DBUSER \
                                          --value ${DBUSER}
 
- ruby ${WORKSPACE}/lib/set_properties.rb --itemname ${STACK_NAME} \
+ ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                         --itemname ${STACK_NAME} \
                                          --property DBPASSWORD \
                                          --value ${DBPASSWORD}
 
- ruby ${WORKSPACE}/lib/set_properties.rb --itemname ${STACK_NAME} \
+ ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                         --itemname ${STACK_NAME} \
                                          --property DBNAME \
                                          --value ${DBNAME}
 
  # Get Min and Max Autoscaling Group Sizes
- MinSize=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
+ MinSize=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                                   --item properties \
                                                    --key DevelopmentAutoscalingGroupMinSize`
  
  # Get Domain Name
- MaxSize=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
+ MaxSize=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                                   --item properties \
                                                    --key DevelopmentAutoscalingGroupMaxSize`
  # Get Instance Type
- InstanceType=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
+ InstanceType=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                                        --item properties \
                                                         --key InstanceType`
 fi
 
 # Get Language
-Language=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
+Language=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                                   --item properties \
                                                    --key Language`
 
 # Get AMI ID
-LATEST_AMI=`ruby ${WORKSPACE}/lib/showback_domain.rb --item ami \
+LATEST_AMI=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                                     --item ami \
                                                      --key latest`
 # Get CFN Group ID
-Group=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
+Group=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                                --item properties \
                                                 --key GROUP`
 # Get S3 Bucket
-S3Bucket=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
+S3Bucket=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                                   --item properties \
                                                    --key S3Bucket`
 # Get Security Group ID and transform into name
-SecurityGroupId=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
+SecurityGroupId=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                                          --item properties \
                                                           --key SGID`
 
 SecurityGroupName=`ruby ${WORKSPACE}/lib/return_security_group_name.rb --securityGroupId ${SecurityGroupId}`
 
 # Get Security Group Owner ID
-SecurityGroupOwnerId=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
+SecurityGroupOwnerId=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                                               --item properties \
                                                                --key SGIDOwner`
 
 # Get SSL Certificate ARN
-SSLCertificateArn=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
+SSLCertificateArn=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                                            --item properties \
                                                             --key SSLCertificateArn`
 
 # Create Cloudformaton Stack
@@ -155,10 +173,12 @@ ruby ${WORKSPACE}/lib/create_stack.rb --stackname ${STACK_NAME} \
                                       --language ${Language} \
                                       --minsize ${MinSize} \
                                       --maxsize ${MaxSize} \
-                                      --instancesize ${InstanceType}
+                                      --instancesize ${InstanceType} \
+                                      --sdbdomain ${SIMPLEDB_STACK}
 
 # Load SimpleDB Domain with Key/Value Pairs for Application Stack
-ruby ${WORKSPACE}/lib/load_domain.rb --filename ${STACK_NAME} \
+ruby ${WORKSPACE}/lib/load_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                     --filename ${STACK_NAME} \
                                      --itemname ${STACK_NAME}
 
 if [ $deployToProduction == true ]
@@ -177,16 +197,19 @@ else
                                           --dbPassword ${DBPASSWORD}
 
  # Load SimpleDB Domain with Key/Value Pairs for Database
- ruby ${WORKSPACE}/lib/load_domain.rb --filename ${STACK_NAME}-DATABASE \
+ ruby ${WORKSPACE}/lib/load_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                      --filename ${STACK_NAME}-DATABASE \
                                       --itemname ${STACK_NAME}
 
  # Get database Endpoint
- Endpoint=`ruby ${WORKSPACE}/lib/showback_domain.rb --item ${STACK_NAME} \
+ Endpoint=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                                    --item ${STACK_NAME} \
                                                     --key DatabaseEndpoint`
 fi
 
 # Get Application Stack Instance Autoscaling Group
-AutoScalingGroup=`ruby ${WORKSPACE}/lib/showback_domain.rb --item ${STACK_NAME} \
+AutoScalingGroup=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                                           --item ${STACK_NAME} \
                                                            --key AutoscalingGroup`
 
 # Get first Instance in Autoscaling Group&apos;s IP address

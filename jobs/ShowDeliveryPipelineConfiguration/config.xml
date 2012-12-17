@@ -59,7 +59,8 @@
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>ruby ${WORKSPACE}/lib/list_properties.rb --itemname ${ITEM_NAME}</command>
+      <command>ruby ${WORKSPACE}/lib/list_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                         --itemname ${ITEM_NAME}</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>

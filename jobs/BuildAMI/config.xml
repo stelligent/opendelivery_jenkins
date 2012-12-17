@@ -50,31 +50,38 @@
   <builders>
     <hudson.tasks.Shell>
       <command># Get Language
-Language=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
+Language=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                                   --item properties \
                                                    --key Language`
 # Set SSH Key
 SSH_KEY=development
 
 # Get AMI ID
-BASE_AMI=`ruby ${WORKSPACE}/lib/showback_domain.rb --item ami \
+BASE_AMI=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                                   --item ami \
                                                    --key base`
 # Get Domain Name
-Domain=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
+Domain=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                                 --item properties \
                                                  --key ProductionDomain`
 # Get CFN Group ID
-Group=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
+Group=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                                --item properties \
                                                 --key GROUP`
 # Get S3 Bucket
-S3Bucket=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
+S3Bucket=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                                   --item properties \
                                                    --key S3Bucket`
 # Get Security Group ID and transform into name
-SecurityGroupId=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
+SecurityGroupId=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                                          --item properties \
                                                           --key SGID`
 
 SecurityGroupName=`ruby ${WORKSPACE}/lib/return_security_group_name.rb --securityGroupId ${SecurityGroupId}`
 
 # Get SSL Certificate ARN
-SSLCertificateArn=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
+SSLCertificateArn=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                                            --item properties \
                                                             --key SSLCertificateArn`
 
 # Create Cloudformaton Stack
@@ -93,14 +100,17 @@ ruby ${WORKSPACE}/lib/create_stack.rb --stackname AMI-${BUILD_NUMBER} \
                                       --language ${Language} \
                                       --minsize 1 \
                                       --maxsize 1 \
-                                      --instancesize m1.medium
+                                      --instancesize m1.medium \
+                                      --sdbdomain ${SIMPLEDB_STACK}
 
 # Load SimpleDB Domain with Key/Value Pairs
-ruby ${WORKSPACE}/lib/load_domain.rb --filename AMI-${BUILD_NUMBER} \
+ruby ${WORKSPACE}/lib/load_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                     --filename AMI-${BUILD_NUMBER} \
                                      --itemname AMI-${BUILD_NUMBER}
 
 # Get Application Stack Instance Autoscaling Group
-AutoScalingGroup=`ruby ${WORKSPACE}/lib/showback_domain.rb --item AMI-${BUILD_NUMBER} \
+AutoScalingGroup=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                                           --item AMI-${BUILD_NUMBER} \
                                                            --key AutoscalingGroup`
 
 # Get first Instance in Autoscaling Group&apos;s IP address
@@ -110,19 +120,11 @@ HOST=`ruby ${WORKSPACE}/lib/return_instance_in_as_group.rb --autoscalingGroup ${
 cucumber ${WORKSPACE}/infrastructure/target/features/production.feature host=${HOST} user=ec2-user key=/usr/share/tomcat6/.ssh/id_rsa
 
 # AMI the instance
-ruby ${WORKSPACE}/lib/create_ami.rb --autoscalingGroup ${AutoScalingGroup} \
+ruby ${WORKSPACE}/lib/create_ami.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                    --autoscalingGroup ${AutoScalingGroup} \
                                     --imagename AMI-${BUILD_NUMBER}</command>
     </hudson.tasks.Shell>
   </builders>
-  <publishers>
-    <hudson.tasks.BuildTrigger>
-      <childProjects>StartDeliveryPipeline</childProjects>
-      <threshold>
-        <name>SUCCESS</name>
-        <ordinal>0</ordinal>
-        <color>BLUE</color>
-      </threshold>
-    </hudson.tasks.BuildTrigger>
-  </publishers>
+  <publishers/>
   <buildWrappers/>
 </project>

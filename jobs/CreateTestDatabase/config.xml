@@ -50,13 +50,15 @@
   <builders>
     <hudson.tasks.Shell>
       <command># Get Security Group ID and transform into name
-SecurityGroupId=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
+SecurityGroupId=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                                          --item properties \
                                                           --key SGID`
 
 SecurityGroupName=`ruby ${WORKSPACE}/lib/return_security_group_name.rb --securityGroupId ${SecurityGroupId}`
 
 # Get Security Group Owner ID
-SecurityGroupOwnerId=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
+SecurityGroupOwnerId=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                                               --item properties \
                                                                --key SGIDOwner`
 
 DBUSER=test
@@ -74,7 +76,8 @@ ruby ${WORKSPACE}/lib/create_database.rb --stackname HavocTestDatabase \
                                          --dbPassword ${DBPASSWORD}
 
 # Load SimpleDB Domain with Key/Value Pairs for Test Database
-ruby ${WORKSPACE}/lib/load_domain.rb --filename HavocTestDatabase \
+ruby ${WORKSPACE}/lib/load_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                     --filename HavocTestDatabase \
                                      --itemname HavocTestDatabase</command>
     </hudson.tasks.Shell>
   </builders>

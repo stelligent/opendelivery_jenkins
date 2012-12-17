@@ -50,7 +50,8 @@
   <builders>
     <hudson.tasks.Shell>
       <command># Get S3 Bucket
-S3Bucket=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
+S3Bucket=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                                   --item properties \
                                                    --key S3Bucket`
 # Git clone application code
 git clone git@github.com:stelligent/havoc_compute.git

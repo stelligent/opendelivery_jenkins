@@ -72,20 +72,22 @@ into the &quot;STACK_NAME&quot; parameter in this job. Jenkins will do the rest!
   <builders>
     <hudson.tasks.Shell>
       <command># Get Language
-Language=`ruby ${WORKSPACE}/lib/showback_domain.rb --item properties \
+Language=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                                   --item properties \
                                                    --key Language`
 
 if [ $deployToProduction == true ]
 then
  cd ${WORKSPACE}/deployment/
- cap production ${Language} database:migration stack=${STACK_NAME} key=/usr/share/tomcat6/.ssh/id_rsa language=${Language}
+ cap production ${Language} database:migration stack=${STACK_NAME} key=/usr/share/tomcat6/.ssh/id_rsa language=${Language} sdbdomain=${SIMPLEDB_STACK}
 else
  cd ${WORKSPACE}/deployment/
- cap staging ${Language} deploy sidekiq:start database:migration stack=${STACK_NAME} key=/usr/share/tomcat6/.ssh/id_rsa language=${Language}
+ cap staging ${Language} deploy sidekiq:start database:migration stack=${STACK_NAME} key=/usr/share/tomcat6/.ssh/id_rsa language=${Language} sdbdomain=${SIMPLEDB_STACK}
 fi
 
 # Get Application Stack Instance Autoscaling Group
-AutoScalingGroup=`ruby ${WORKSPACE}/lib/showback_domain.rb --item ${STACK_NAME} \
+AutoScalingGroup=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                                           --item ${STACK_NAME} \
                                                            --key AutoscalingGroup`
 
 # Get first Instance in Autoscaling Group&apos;s IP address

@@ -194,7 +194,8 @@
     <hudson.tasks.Shell>
       <command>if [ -n &quot;${ArtifactUrl}&quot; ]
 then
-ruby ${WORKSPACE}/lib/set_properties.rb --property ArtifactUrl \
+ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                        --property ArtifactUrl \
                                         --value ${ArtifactUrl} \
                                         --itemname properties
 else
@@ -203,7 +204,8 @@ fi
 
 if [ -n &quot;${DevelopmentDomain}&quot; ]
 then
-ruby ${WORKSPACE}/lib/set_properties.rb --property DevelopmentDomain \
+ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                        --property DevelopmentDomain \
                                         --value ${DevelopmentDomain} \
                                         --itemname properties
 else
@@ -212,7 +214,8 @@ fi
 
 if [ -n &quot;${ProductionDatabaseIP}&quot; ]
 then
-ruby ${WORKSPACE}/lib/set_properties.rb --property ProductionDatabaseIP \
+ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                        --property ProductionDatabaseIP \
                                         --value ${ProductionDatabaseIP} \
                                         --itemname properties
 else
@@ -222,7 +225,8 @@ fi
 
 if [ -n &quot;${ProductionDatabaseUsername}&quot; ]
 then
-ruby ${WORKSPACE}/lib/set_properties.rb --property ProductionDatabaseUsername \
+ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                        --property ProductionDatabaseUsername \
                                         --value ${ProductionDatabaseUsername} \
                                         --itemname properties
 else
@@ -233,7 +237,8 @@ fi
 
 if [ -n &quot;${ProductionDatabaseName}&quot; ]
 then
-ruby ${WORKSPACE}/lib/set_properties.rb --property ProductionDatabaseName \
+ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                        --property ProductionDatabaseName \
                                         --value ${ProductionDatabaseName} \
                                         --itemname properties
 else
@@ -244,7 +249,8 @@ fi
 
 if [ -n &quot;${ProductionDatabasePassword}&quot; ]
 then
-ruby ${WORKSPACE}/lib/set_properties.rb --property ProductionDatabasePassword \
+ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                        --property ProductionDatabasePassword \
                                         --value ${ProductionDatabasePassword} \
                                         --itemname properties
 else
@@ -253,7 +259,8 @@ fi
 
 if [ -n &quot;${DevelopmentStripeSecretKey}&quot; ]
 then
-ruby ${WORKSPACE}/lib/set_properties.rb --property DevelopmentStripeSecretKey \
+ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                        --property DevelopmentStripeSecretKey \
                                         --value ${DevelopmentStripeSecretKey} \
                                         --itemname properties
 else
@@ -262,7 +269,8 @@ fi
 
 if [ -n &quot;${DevelopmentStripePublicKey}&quot; ]
 then
-ruby ${WORKSPACE}/lib/set_properties.rb --property DevelopmentStripePublicKey \
+ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                        --property DevelopmentStripePublicKey \
                                         --value ${DevelopmentStripePublicKey} \
                                         --itemname properties
 else
@@ -271,7 +279,8 @@ fi
 
 if [ -n &quot;${ProductionStripePublicKey}&quot; ]
 then
-ruby ${WORKSPACE}/lib/set_properties.rb --property ProductionStripePublicKey \
+ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                        --property ProductionStripePublicKey \
                                         --value ${ProductionStripePublicKey} \
                                         --itemname properties
 else
@@ -280,7 +289,8 @@ fi
 
 if [ -n &quot;${LogglyUrl}&quot; ]
 then
-ruby ${WORKSPACE}/lib/set_properties.rb --property LogglyUrl \
+ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                        --property LogglyUrl \
                                         --value ${LogglyUrl} \
                                         --itemname properties
 else
@@ -289,7 +299,8 @@ fi
 
 if [ -n &quot;${SESUsername}&quot; ]
 then
-ruby ${WORKSPACE}/lib/set_properties.rb --property SESUsername \
+ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                        --property SESUsername \
                                         --value ${SESUsername} \
                                         --itemname properties
 else
@@ -298,7 +309,8 @@ fi
 
 if [ -n &quot;${SESPassword}&quot; ]
 then
-ruby ${WORKSPACE}/lib/set_properties.rb --property SESPassword \
+ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                        --property SESPassword \
                                         --value ${SESPassword} \
                                         --itemname properties
 else
@@ -308,7 +320,8 @@ fi
 
 if [ -n &quot;${SESMailer}&quot; ]
 then
-ruby ${WORKSPACE}/lib/set_properties.rb --property SESMailer \
+ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                        --property SESMailer \
                                         --value ${SESMailer} \
                                         --itemname properties
 else
@@ -317,7 +330,8 @@ fi
 
 if [ -n &quot;${ProductionRedisDomain}&quot; ]
 then
-ruby ${WORKSPACE}/lib/set_properties.rb --property ProductionRedisDomain \
+ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                        --property ProductionRedisDomain \
                                         --value ${ProductionRedisDomain} \
                                         --itemname properties
 else
@@ -326,7 +340,8 @@ fi
 
 if [ -n &quot;${ProductionDomain}&quot; ]
 then
-ruby ${WORKSPACE}/lib/set_properties.rb --property ProductionDomain \
+ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                        --property ProductionDomain \
                                         --value ${ProductionDomain} \
                                         --itemname properties
 else
@@ -335,7 +350,8 @@ fi
 
 if [ -n &quot;${SSLCertificateArn}&quot; ]
 then
-ruby ${WORKSPACE}/lib/set_properties.rb --property SSLCertificateArn \
+ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                        --property SSLCertificateArn \
                                         --value ${SSLCertificateArn} \
                                         --itemname properties
 else
@@ -344,7 +360,8 @@ fi
 
 if [ -n &quot;${S3Bucket}&quot; ]
 then
-ruby ${WORKSPACE}/lib/set_properties.rb --property S3Bucket \
+ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                        --property S3Bucket \
                                         --value ${S3Bucket} \
                                         --itemname properties
 else
@@ -353,7 +370,8 @@ fi
 
 if [ -n &quot;${ProductionAutoscalingGroupMinSize}&quot; ]
 then
-ruby ${WORKSPACE}/lib/set_properties.rb --property ProductionAutoscalingGroupMinSize \
+ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                        --property ProductionAutoscalingGroupMinSize \
                                         --value ${ProductionAutoscalingGroupMinSize} \
                                         --itemname properties
 else
@@ -362,7 +380,8 @@ fi
 
 if [ -n &quot;${ProductionAutoscalingGroupMaxSize}&quot; ]
 then
-ruby ${WORKSPACE}/lib/set_properties.rb --property ProductionAutoscalingGroupMaxSize \
+ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                        --property ProductionAutoscalingGroupMaxSize \
                                         --value ${ProductionAutoscalingGroupMaxSize} \
                                         --itemname properties
 else
@@ -371,7 +390,8 @@ fi
 
 if [ -n &quot;${DevelopmentAutoscalingGroupMinSize}&quot; ]
 then
-ruby ${WORKSPACE}/lib/set_properties.rb --property DevelopmentAutoscalingGroupMinSize \
+ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                        --property DevelopmentAutoscalingGroupMinSize \
                                         --value ${DevelopmentAutoscalingGroupMinSize} \
                                         --itemname properties
 else
@@ -380,7 +400,8 @@ fi
 
 if [ -n &quot;${DevelopmentAutoscalingGroupMaxSize}&quot; ]
 then
-ruby ${WORKSPACE}/lib/set_properties.rb --property DevelopmentAutoscalingGroupMaxSize \
+ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                        --property DevelopmentAutoscalingGroupMaxSize \
                                         --value ${DevelopmentAutoscalingGroupMaxSize} \
                                         --itemname properties
 else
@@ -389,7 +410,8 @@ fi
 
 if [ -n &quot;${Language}&quot; ]
 then
-ruby ${WORKSPACE}/lib/set_properties.rb --property Language \
+ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                        --property Language \
                                         --value ${Language} \
                                         --itemname properties
 else
@@ -398,7 +420,8 @@ fi
 
 if [ -n &quot;${InstanceType}&quot; ]
 then
-ruby ${WORKSPACE}/lib/set_properties.rb --property InstanceType \
+ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                        --property InstanceType \
                                         --value ${InstanceType} \
                                         --itemname properties
 else
