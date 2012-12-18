@@ -54,7 +54,7 @@ S3Bucket=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK}
                                                    --item properties \
                                                    --key S3Bucket`
 # Git clone application code
-git clone git@github.com:stelligent/havoc_compute.git
+git clone https://github.com/OpenDelivery/sample_app.git
 
 # Run unit tests
 # cd havoc_compute/
@@ -64,7 +64,7 @@ git clone git@github.com:stelligent/havoc_compute.git
 cd ${WORKSPACE}
 
 # Create tar.gz of each artifact
-tar -czvf havoc_compute.tar.gz havoc_compute/*
+tar -czvf sample_app.tar.gz sample_app/*
 tar -czvf capistrano.tar.gz deployment/*
 
 # Change to puppet Directory
@@ -75,7 +75,7 @@ tar -czvf puppet.tar.gz modules/* manifests/*
 cd ${WORKSPACE}
 
 # Push artifacts up to S3
-ruby ${WORKSPACE}/lib/s3_upload.rb --filename havoc_compute.tar.gz                 --bucket ${S3Bucket} --key havoc_compute.tar.gz
+ruby ${WORKSPACE}/lib/s3_upload.rb --filename sample_app.tar.gz                    --bucket ${S3Bucket} --key sample_app.tar.gz
 ruby ${WORKSPACE}/lib/s3_upload.rb --filename capistrano.tar.gz                    --bucket ${S3Bucket} --key capistrano.tar.gz
 ruby ${WORKSPACE}/lib/s3_upload.rb --filename infrastructure/puppet/puppet.tar.gz  --bucket ${S3Bucket} --key puppet.tar.gz</command>
     </hudson.tasks.Shell>

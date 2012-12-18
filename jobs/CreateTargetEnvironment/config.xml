@@ -65,7 +65,7 @@ then
  MinSize=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
                                                    --item properties \
                                                    --key ProductionAutoscalingGroupMinSize`
- 
+
  # Get Domain Name
  MaxSize=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
                                                    --item properties \
@@ -112,7 +112,7 @@ else
  MinSize=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
                                                    --item properties \
                                                    --key DevelopmentAutoscalingGroupMinSize`
- 
+
  # Get Domain Name
  MaxSize=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
                                                    --item properties \
@@ -152,11 +152,6 @@ SecurityGroupOwnerId=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIM
                                                                --item properties \
                                                                --key SGIDOwner`
 
-# Get SSL Certificate ARN
-SSLCertificateArn=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
-                                                            --item properties \
-                                                            --key SSLCertificateArn`
-
 # Create Cloudformaton Stack
 ruby ${WORKSPACE}/lib/create_stack.rb --stackname ${STACK_NAME} \
                                       --group ${Group} \
@@ -169,7 +164,6 @@ ruby ${WORKSPACE}/lib/create_stack.rb --stackname ${STACK_NAME} \
                                       --s3bucket ${S3Bucket} \
                                       --securitygroup ${SecurityGroupName} \
                                       --snstopic ${SNS_TOPIC} \
-                                      --sslcertificatearn ${SSLCertificateArn} \
                                       --language ${Language} \
                                       --minsize ${MinSize} \
                                       --maxsize ${MaxSize} \
