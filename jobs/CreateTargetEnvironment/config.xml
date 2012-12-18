@@ -210,20 +210,7 @@ AutoScalingGroup=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLED
 HOST=`ruby ${WORKSPACE}/lib/return_instance_in_as_group.rb --autoscalingGroup ${AutoScalingGroup}`
 
 # Run Acceptance Tests
-cucumber ${WORKSPACE}/infrastructure/target/features/production.feature host=${HOST} user=ec2-user key=/usr/share/tomcat6/.ssh/id_rsa
-
-if [ $deployToProduction == false ]
-then
- # Send email to user
- # ruby ${WORKSPACE}/lib/send_env_email.rb --email ${EMAIL}\
- #                                         --stackname ${STACK_NAME}\
- #                                         --domain ${Domain}\
- #                                         --databaseEndpoint ${Endpoint} \
- #                                         --databaseUsername ${DBUSER} \
- #                                         --databasePassword ${DBPASSWORD} \
- #                                         --ipaddress ${HOST} \
- #                                         --sender havoc@stelligent.com
-fi</command>
+cucumber ${WORKSPACE}/infrastructure/target/features/production.feature host=${HOST} user=ec2-user key=/usr/share/tomcat6/.ssh/id_rsa</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers>
