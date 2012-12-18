@@ -215,14 +215,14 @@ cucumber ${WORKSPACE}/infrastructure/target/features/production.feature host=${H
 if [ $deployToProduction == false ]
 then
  # Send email to user
- ruby ${WORKSPACE}/lib/send_env_email.rb --email ${EMAIL}\
-                                         --stackname ${STACK_NAME}\
-                                         --domain ${Domain}\
-                                         --databaseEndpoint ${Endpoint} \
-                                         --databaseUsername ${DBUSER} \
-                                         --databasePassword ${DBPASSWORD} \
-                                         --ipaddress ${HOST} \
-                                         --sender havoc@stelligent.com
+ # ruby ${WORKSPACE}/lib/send_env_email.rb --email ${EMAIL}\
+ #                                         --stackname ${STACK_NAME}\
+ #                                         --domain ${Domain}\
+ #                                         --databaseEndpoint ${Endpoint} \
+ #                                         --databaseUsername ${DBUSER} \
+ #                                         --databasePassword ${DBPASSWORD} \
+ #                                         --ipaddress ${HOST} \
+ #                                         --sender havoc@stelligent.com
 fi</command>
     </hudson.tasks.Shell>
   </builders>

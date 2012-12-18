@@ -96,9 +96,9 @@ HOST=`ruby ${WORKSPACE}/lib/return_instance_in_as_group.rb --autoscalingGroup ${
 cucumber ${WORKSPACE}/deployment/features/deployment.feature host=${HOST} user=ec2-user key=/usr/share/tomcat6/.ssh/id_rsa
 
 # Email User about deployment
-ruby ${WORKSPACE}/lib/send_deploy_email.rb --email ${EMAIL} \
-                                           --ipaddress ${HOST} \
-                                           --sender havoc@stelligent.com</command>
+# ruby ${WORKSPACE}/lib/send_deploy_email.rb --email ${EMAIL} \
+#                                            --ipaddress ${HOST} \
+#                                            --sender havoc@stelligent.com</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>
