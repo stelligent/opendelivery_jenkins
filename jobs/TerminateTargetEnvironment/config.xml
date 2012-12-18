@@ -10,7 +10,7 @@ best practice to use this job for terminating target stacks</description>
         <hudson.model.StringParameterDefinition>
           <name>STACK_NAME</name>
           <description></description>
-          <defaultValue>automanateestack99</defaultValue>
+          <defaultValue></defaultValue>
         </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
@@ -21,7 +21,7 @@ best practice to use this job for terminating target stacks</description>
       <hudson.plugins.git.UserRemoteConfig>
         <name></name>
         <refspec></refspec>
-        <url>git@github.com:stelligent/havoc_compute_platform.git</url>
+        <url>git@github.com:stelligent/continuous_delivery_open_platform.git</url>
       </hudson.plugins.git.UserRemoteConfig>
     </userRemoteConfigs>
     <branches>

@@ -10,7 +10,7 @@
       <hudson.plugins.git.UserRemoteConfig>
         <name></name>
         <refspec></refspec>
-        <url>git@github.com:stelligent/havoc_compute_platform.git</url>
+        <url>git@github.com:stelligent/continuous_delivery_open_platform.git</url>
       </hudson.plugins.git.UserRemoteConfig>
     </userRemoteConfigs>
     <branches>
@@ -77,7 +77,12 @@ cd ${WORKSPACE}
 # Push artifacts up to S3
 ruby ${WORKSPACE}/lib/s3_upload.rb --filename sample_app.tar.gz                    --bucket ${S3Bucket} --key sample_app.tar.gz
 ruby ${WORKSPACE}/lib/s3_upload.rb --filename capistrano.tar.gz                    --bucket ${S3Bucket} --key capistrano.tar.gz
-ruby ${WORKSPACE}/lib/s3_upload.rb --filename infrastructure/puppet/puppet.tar.gz  --bucket ${S3Bucket} --key puppet.tar.gz</command>
+ruby ${WORKSPACE}/lib/s3_upload.rb --filename infrastructure/puppet/puppet.tar.gz  --bucket ${S3Bucket} --key puppet.tar.gz
+# Build Artifact URL
+ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                        --itemname properties \
+                                        --property ArtifactUrl \
+                                        --value https://s3.amazonaws.com/${S3Bucket}/sample_app.tar.gz</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers>
