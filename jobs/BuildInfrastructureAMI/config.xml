@@ -1,0 +1,140 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="hudson.plugins.git.GitSCM">
+    <configVersion>2</configVersion>
+    <userRemoteConfigs>
+      <hudson.plugins.git.UserRemoteConfig>
+        <name></name>
+        <refspec></refspec>
+        <url>git@github.com:stelligent/havoc_platform.git</url>
+      </hudson.plugins.git.UserRemoteConfig>
+    </userRemoteConfigs>
+    <branches>
+      <hudson.plugins.git.BranchSpec>
+        <name>master</name>
+      </hudson.plugins.git.BranchSpec>
+    </branches>
+    <disableSubmodules>false</disableSubmodules>
+    <recursiveSubmodules>false</recursiveSubmodules>
+    <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+    <authorOrCommitter>false</authorOrCommitter>
+    <clean>false</clean>
+    <wipeOutWorkspace>false</wipeOutWorkspace>
+    <pruneBranches>false</pruneBranches>
+    <remotePoll>false</remotePoll>
+    <ignoreNotifyCommit>false</ignoreNotifyCommit>
+    <useShallowClone>false</useShallowClone>
+    <buildChooser class="hudson.plugins.git.util.DefaultBuildChooser"/>
+    <gitTool>Default</gitTool>
+    <submoduleCfg class="list"/>
+    <relativeTargetDir></relativeTargetDir>
+    <reference></reference>
+    <excludedRegions></excludedRegions>
+    <excludedUsers></excludedUsers>
+    <gitConfigName></gitConfigName>
+    <gitConfigEmail></gitConfigEmail>
+    <skipTag>false</skipTag>
+    <includedRegions></includedRegions>
+    <scmName></scmName>
+  </scm>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers class="vector"/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command># Get Language
+Language=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                                   --item properties \
+                                                   --key Language`
+# Set SSH Key
+SSH_KEY=development
+
+# Get AMI ID
+BASE_AMI=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                                   --item ami \
+                                                   --key base`
+# Get Domain Name
+Domain=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                                 --item properties \
+                                                 --key ProductionDomain`
+# Get CFN Group ID
+Group=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                                --item properties \
+                                                --key GROUP`
+# Get S3 Bucket
+S3Bucket=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                                   --item properties \
+                                                   --key S3Bucket`
+# Get Security Group ID and transform into name
+SecurityGroupId=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                                          --item properties \
+                                                          --key SGID`
+
+SecurityGroupName=`ruby ${WORKSPACE}/lib/return_security_group_name.rb --securityGroupId ${SecurityGroupId}`
+
+# Get SSL Certificate ARN
+SSLCertificateArn=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                                            --item properties \
+                                                            --key SSLCertificateArn`
+
+# Create Cloudformaton Stack
+ruby ${WORKSPACE}/lib/create_stack.rb --stackname AMI-${BUILD_NUMBER} \
+                                      --group ${Group} \
+                                      --domain ${Domain} \
+                                      --type Infrastructure \
+                                      --ami ${BASE_AMI} \
+                                      --templatelocation ${WORKSPACE}/infrastructure/target/production.template \
+                                      --application AMI-${BUILD_NUMBER} \
+                                      --sshkey ${SSH_KEY} \
+                                      --s3bucket ${S3Bucket} \
+                                      --securitygroup ${SecurityGroupName} \
+                                      --snstopic ${SNS_TOPIC} \
+                                      --sslcertificatearn ${SSLCertificateArn} \
+                                      --language ${Language} \
+                                      --minsize 1 \
+                                      --maxsize 1 \
+                                      --instancesize m1.medium \
+                                      --sdbdomain ${SIMPLEDB_STACK}
+
+# Load SimpleDB Domain with Key/Value Pairs
+ruby ${WORKSPACE}/lib/load_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                     --filename AMI-${BUILD_NUMBER} \
+                                     --itemname AMI-${BUILD_NUMBER}
+
+# Get Application Stack Instance Autoscaling Group
+AutoScalingGroup=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                                           --item AMI-${BUILD_NUMBER} \
+                                                           --key AutoscalingGroup`
+
+# Get first Instance in Autoscaling Group&apos;s IP address
+HOST=`ruby ${WORKSPACE}/lib/return_instance_in_as_group.rb --autoscalingGroup ${AutoScalingGroup}`
+
+# Run Infrastructure Acceptance Tests
+cucumber ${WORKSPACE}/infrastructure/target/features/production.feature host=${HOST} user=ec2-user key=/usr/share/tomcat6/.ssh/id_rsa
+
+# AMI the instance
+ruby ${WORKSPACE}/lib/create_ami.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                    --autoscalingGroup ${AutoScalingGroup} \
+                                    --imagename INFRASTRUCTURE-AMI-${SIMPLEDB_STACK}${BUILD_NUMBER} \
+                                    --amitype infrastructure</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers>
+    <hudson.tasks.BuildTrigger>
+      <childProjects>ApplicationBuild</childProjects>
+      <threshold>
+        <name>SUCCESS</name>
+        <ordinal>0</ordinal>
+        <color>BLUE</color>
+      </threshold>
+    </hudson.tasks.BuildTrigger>
+  </publishers>
+  <buildWrappers/>
+</project>
