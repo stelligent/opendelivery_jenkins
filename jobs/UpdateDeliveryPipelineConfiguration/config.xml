@@ -7,11 +7,6 @@
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
         <hudson.model.StringParameterDefinition>
-          <name>ArtifactUrl</name>
-          <description></description>
-          <defaultValue></defaultValue>
-        </hudson.model.StringParameterDefinition>
-        <hudson.model.StringParameterDefinition>
           <name>ProductionDatabaseIP</name>
           <description></description>
           <defaultValue></defaultValue>
@@ -27,12 +22,72 @@
           <defaultValue></defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
+          <name>ProductionDatabasePassword</name>
+          <description></description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>DevelopmentStripeSecretKey</name>
+          <description></description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>DevelopmentStripePublicKey</name>
+          <description></description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>ProductionStripePublicKey</name>
+          <description></description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>ProductionStripeSecretKey</name>
+          <description></description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>LogglyUrl</name>
+          <description></description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>SESUsername</name>
+          <description></description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>SESPassword</name>
+          <description></description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>SESMailer</name>
+          <description></description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>ProductionRedisDomain</name>
+          <description></description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
           <name>DevelopmentDomain</name>
           <description></description>
           <defaultValue></defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>ProductionDomain</name>
+          <description></description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>SSLCertificateArn</name>
+          <description></description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>S3Bucket</name>
           <description></description>
           <defaultValue></defaultValue>
         </hudson.model.StringParameterDefinition>
@@ -84,6 +139,36 @@
             </a>
           </choices>
         </hudson.model.ChoiceParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>EncryptionKey</name>
+          <description></description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>NewRelicKey</name>
+          <description></description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>IntercomAppId</name>
+          <description></description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>IntercomApiSecret</name>
+          <description></description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>IntercomApiKey</name>
+          <description></description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>ProductionLoadbalancerName</name>
+          <description></description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -93,7 +178,7 @@
       <hudson.plugins.git.UserRemoteConfig>
         <name></name>
         <refspec></refspec>
-        <url>git@github.com:stelligent/havoc_compute_platform.git</url>
+        <url>git@github.com:stelligent/havoc_platform.git</url>
       </hudson.plugins.git.UserRemoteConfig>
     </userRemoteConfigs>
     <branches>
@@ -132,17 +217,7 @@
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>if [ -n &quot;${ArtifactUrl}&quot; ]
-then
-ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
-                                        --property ArtifactUrl \
-                                        --value ${ArtifactUrl} \
-                                        --itemname properties
-else
-echo &quot;staying the same&quot;
-fi
-
-if [ -n &quot;${DevelopmentDomain}&quot; ]
+      <command>if [ -n &quot;${DevelopmentDomain}&quot; ]
 then
 ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
                                         --property DevelopmentDomain \
@@ -197,11 +272,122 @@ else
 echo &quot;staying the same&quot;
 fi
 
+if [ -n &quot;${DevelopmentStripeSecretKey}&quot; ]
+then
+ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                        --property DevelopmentStripeSecretKey \
+                                        --value ${DevelopmentStripeSecretKey} \
+                                        --itemname properties
+else
+echo &quot;staying the same&quot;
+fi
+
+if [ -n &quot;${DevelopmentStripePublicKey}&quot; ]
+then
+ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                        --property DevelopmentStripePublicKey \
+                                        --value ${DevelopmentStripePublicKey} \
+                                        --itemname properties
+else
+echo &quot;staying the same&quot;
+fi
+
+if [ -n &quot;${ProductionStripePublicKey}&quot; ]
+then
+ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                        --property ProductionStripePublicKey \
+                                        --value ${ProductionStripePublicKey} \
+                                        --itemname properties
+else
+echo &quot;staying the same&quot;
+fi
+
+if [ -n &quot;${ProductionStripeSecretKey}&quot; ]
+then
+ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                        --property ProductionStripeSecretKey \
+                                        --value ${ProductionStripeSecretKey} \
+                                        --itemname properties
+else
+echo &quot;staying the same&quot;
+fi
+
+if [ -n &quot;${LogglyUrl}&quot; ]
+then
+ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                        --property LogglyUrl \
+                                        --value ${LogglyUrl} \
+                                        --itemname properties
+else
+echo &quot;staying the same&quot;
+fi
+
+if [ -n &quot;${SESUsername}&quot; ]
+then
+ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                        --property SESUsername \
+                                        --value ${SESUsername} \
+                                        --itemname properties
+else
+echo &quot;staying the same&quot;
+fi
+
+if [ -n &quot;${SESPassword}&quot; ]
+then
+ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                        --property SESPassword \
+                                        --value ${SESPassword} \
+                                        --itemname properties
+else
+echo &quot;staying the same&quot;
+fi
+
+
+if [ -n &quot;${SESMailer}&quot; ]
+then
+ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                        --property SESMailer \
+                                        --value ${SESMailer} \
+                                        --itemname properties
+else
+echo &quot;staying the same&quot;
+fi
+
+if [ -n &quot;${ProductionRedisDomain}&quot; ]
+then
+ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                        --property ProductionRedisDomain \
+                                        --value ${ProductionRedisDomain} \
+                                        --itemname properties
+else
+echo &quot;staying the same&quot;
+fi
+
 if [ -n &quot;${ProductionDomain}&quot; ]
 then
 ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
                                         --property ProductionDomain \
                                         --value ${ProductionDomain} \
+                                        --itemname properties
+else
+echo &quot;staying the same&quot;
+fi
+
+if [ -n &quot;${SSLCertificateArn}&quot; ]
+then
+ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                        --property SSLCertificateArn \
+                                        --value ${SSLCertificateArn} \
+                                        --itemname properties
+else
+echo &quot;staying the same&quot;
+fi
+
+if [ -n &quot;${S3Bucket}&quot; ]
+then
+ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                        --property S3Bucket \
+                                        --value ${S3Bucket} \
                                         --itemname properties
 else
 echo &quot;staying the same&quot;
@@ -265,9 +451,78 @@ ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
                                         --itemname properties
 else
 echo &quot;staying the same&quot;
+fi
+
+if [ -n &quot;${EncryptionKey}&quot; ]
+then
+ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                        --property EncryptionKey \
+                                        --value ${EncryptionKey} \
+                                        --itemname properties
+else
+echo &quot;staying the same&quot;
+fi
+
+if [ -n &quot;${NewRelicKey}&quot; ]
+then
+ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                        --property NewRelicKey \
+                                        --value ${NewRelicKey} \
+                                        --itemname properties
+else
+echo &quot;staying the same&quot;
+fi
+
+if [ -n &quot;${IntercomAppId}&quot; ]
+then
+ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                        --property IntercomAppId \
+                                        --value ${IntercomAppId} \
+                                        --itemname properties
+else
+echo &quot;staying the same&quot;
+fi
+
+if [ -n &quot;${IntercomApiSecret}&quot; ]
+then
+ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                        --property IntercomApiSecret \
+                                        --value ${IntercomApiSecret} \
+                                        --itemname properties
+else
+echo &quot;staying the same&quot;
+fi
+
+if [ -n &quot;${IntercomApiKey}&quot; ]
+then
+ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                        --property IntercomApiKey \
+                                        --value ${IntercomApiKey} \
+                                        --itemname properties
+else
+echo &quot;staying the same&quot;
+fi
+
+if [ -n &quot;${ProductionLoadbalancerName}&quot; ]
+then
+ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                        --property ProductionLoadbalancerName \
+                                        --value ${ProductionLoadbalancerName} \
+                                        --itemname properties
+else
+echo &quot;staying the same&quot;
 fi</command>
     </hudson.tasks.Shell>
   </builders>
-  <publishers/>
+  <publishers>
+    <hudson.tasks.BuildTrigger>
+      <childProjects>InfrastructureBuild</childProjects>
+      <threshold>
+        <name>SUCCESS</name>
+        <ordinal>0</ordinal>
+        <color>BLUE</color>
+      </threshold>
+    </hudson.tasks.BuildTrigger>
+  </publishers>
   <buildWrappers/>
 </project>
