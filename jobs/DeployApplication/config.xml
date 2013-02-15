@@ -95,7 +95,21 @@ HOST=`ruby ${WORKSPACE}/lib/return_instance_in_as_group.rb --autoscalingGroup ${
 
 cucumber ${WORKSPACE}/deployment/features/deployment.feature host=${HOST} user=ec2-user key=/usr/share/tomcat6/.ssh/id_rsa
 
-</command>
+# Email User about deployment
+ruby ${WORKSPACE}/lib/send_deploy_email.rb --email ${EMAIL} \
+                                           --ipaddress ${HOST} \
+                                           --sender havoc@stelligent.com
+
+if [ $deployToProduction == true ]
+then
+ # Get Load Balancer DNS name
+ LoadBalancerDNS=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                                           --item ${STACK_NAME} \
+                                                           --key LoadBalancerDNS`
+
+ # Perform DNS switchover
+ route53 --zone stelligent.com. -g --name havoc.stelligent.com. --type CNAME --ttl 600 --values ${LoadBalancerDNS}
+fi</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>
