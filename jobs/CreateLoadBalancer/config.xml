@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions/>
-  <description>This is the build for the common-step-definitions gem. It builds the gem and then pushes it up to s3.</description>
+  <description></description>
   <keepDependencies>false</keepDependencies>
   <properties/>
   <scm class="hudson.plugins.git.GitSCM">
@@ -10,7 +10,7 @@
       <hudson.plugins.git.UserRemoteConfig>
         <name></name>
         <refspec></refspec>
-        <url>git@github.com:stelligent/continuous_delivery_open_platform.git</url>
+        <url>git@github.com:stelligent/havoc_platform.git</url>
       </hudson.plugins.git.UserRemoteConfig>
     </userRemoteConfigs>
     <branches>
@@ -45,22 +45,23 @@
   <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
-  <triggers class="vector">
-    <hudson.triggers.SCMTrigger>
-      <spec>0 */3 * * *</spec>
-    </hudson.triggers.SCMTrigger>
-  </triggers>
+  <triggers class="vector"/>
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command># Get S3 Bucket
-S3Bucket=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
-                                                   --item properties \
-                                                   --key S3Bucket`
+      <command># Get SSL Certificate ARN
+SSLCertificateArn=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                                            --item properties \
+                                                            --key SSLCertificateArn`
+# Create Cloudformaton Stack
+ruby ${WORKSPACE}/lib/create_loadbalancer.rb --stackname LOADBALANCER-${SIMPLEDB_STACK}-${BUILD_NUMBER} \
+                                             --templatelocation ${WORKSPACE}/infrastructure/target/loadbalancer.template \
+                                             --sslcertificatearn ${SSLCertificateArn}
 
-gem build gems/common-step-definitions/common-step-definitions.gemspec
-
-ruby ${WORKSPACE}/lib/s3_upload.rb --filename common-step-definitions-1.0.0.gem --bucket ${S3Bucket} --key resources/gems/common-step-definitions-1.0.0.gem</command>
+# Load SimpleDB Domain with Key/Value Pairs for Application Stack
+ruby ${WORKSPACE}/lib/load_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                     --filename LOADBALANCER-${SIMPLEDB_STACK}-${BUILD_NUMBER} \
+                                     --itemname LOADBALANCER-${SIMPLEDB_STACK}-${BUILD_NUMBER}</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>

@@ -125,7 +125,7 @@ The Continuous Delivery Platform consists of:&#xd;
       <filterExecutors>false</filterExecutors>
       <filterQueue>false</filterQueue>
       <properties class="hudson.model.View$PropertyList"/>
-      <selectedJob>Build</selectedJob>
+      <selectedJob>InfrastructureBuild</selectedJob>
       <noOfDisplayedBuilds>1</noOfDisplayedBuilds>
       <buildViewTitle></buildViewTitle>
       <triggerOnlyLatestJob>false</triggerOnlyLatestJob>
