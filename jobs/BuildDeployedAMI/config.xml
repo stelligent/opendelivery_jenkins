@@ -79,10 +79,6 @@ SecurityGroupId=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB
 
 SecurityGroupName=`ruby ${WORKSPACE}/lib/return_security_group_name.rb --securityGroupId ${SecurityGroupId}`
 
-# Get SSL Certificate ARN
-SSLCertificateArn=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
-                                                            --item properties \
-                                                            --key SSLCertificateArn`
 
 # Create Cloudformaton Stack
 ruby ${WORKSPACE}/lib/create_stack.rb --stackname AMI-${BUILD_NUMBER} \
@@ -96,7 +92,6 @@ ruby ${WORKSPACE}/lib/create_stack.rb --stackname AMI-${BUILD_NUMBER} \
                                       --s3bucket ${S3Bucket} \
                                       --securitygroup ${SecurityGroupName} \
                                       --snstopic ${SNS_TOPIC} \
-                                      --sslcertificatearn ${SSLCertificateArn} \
                                       --language ${Language} \
                                       --minsize 1 \
                                       --maxsize 1 \
