@@ -100,8 +100,8 @@ ruby ${WORKSPACE}/lib/create_stack.rb --stackname AMI-${BUILD_NUMBER} \
 
 # Load SimpleDB Domain with Key/Value Pairs
 ruby ${WORKSPACE}/lib/load_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
-                                     --filename AMI-${BUILD_NUMBER} \
-                                     --itemname AMI-${BUILD_NUMBER}
+                                     --filename AMI-${BUILD_NUMBER}-${SIMPLEDB_STACK} \
+                                     --itemname AMI-${BUILD_NUMBER}-${SIMPLEDB_STACK}
 
 # Get Application Stack Instance Autoscaling Group
 AutoScalingGroup=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
