@@ -80,7 +80,7 @@ SecurityGroupId=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB
 SecurityGroupName=`ruby ${WORKSPACE}/lib/return_security_group_name.rb --securityGroupId ${SecurityGroupId}`
 
 # Create Cloudformaton Stack
-ruby ${WORKSPACE}/lib/create_stack.rb --stackname AMI-${BUILD_NUMBER} \
+ruby ${WORKSPACE}/lib/create_stack.rb --stackname AMI-${BUILD_NUMBER}-${SIMPLEDB_STACK} \
                                       --group ${Group} \
                                       --domain ${Domain} \
                                       --type Infrastructure \
