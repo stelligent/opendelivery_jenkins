@@ -32,7 +32,7 @@ into the &quot;STACK_NAME&quot; parameter in this job. Jenkins will do the rest!
       <hudson.plugins.git.UserRemoteConfig>
         <name></name>
         <refspec></refspec>
-        <url></url>
+        <url>git@github.com:stelligent/continuous_delivery_open_platform.git</url>
       </hudson.plugins.git.UserRemoteConfig>
     </userRemoteConfigs>
     <branches>
