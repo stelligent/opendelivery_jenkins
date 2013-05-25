@@ -49,75 +49,24 @@
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command># Get Language
-      Language=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
-                                                         --item properties \
-                                                         --key Language`
-      # Set SSH Key
-      SSH_KEY=development
+      <command>ruby ${WORKSPACE}/lib/eops/bin/build_ami.rb ${WORKSPACE} ${SIMPLEDB_STACK} ${PROJECT_NAME} AMI-${BUILD_NUMBER}-${JOB_NAME} ${SNS_TOPIC} Infrastructure
 
-      # Get AMI ID
-      BASE_AMI=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
-                                                         --item ami \
-                                                         --key base`
-      # Get Domain Name
-      Domain=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
-                                                       --item properties \
-                                                       --key ProductionDomain`
-      # Get CFN Group ID
-      Group=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
-                                                      --item properties \
-                                                      --key GROUP`
-      # Get S3 Bucket
-      S3Bucket=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
-                                                         --item properties \
-                                                         --key S3Bucket`
-      # Get Security Group ID and transform into name
-      SecurityGroupId=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
-                                                                --item properties \
-                                                                --key SGID`
+# Get Application Stack Instance Autoscaling Group
+AutoScalingGroup=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                                           --item AMI-${BUILD_NUMBER}-${JOB_NAME} \
+                                                           --key AutoscalingGroup`
 
-      SecurityGroupName=`ruby ${WORKSPACE}/lib/return_security_group_name.rb --securityGroupId ${SecurityGroupId}`
+# Get first Instance in Autoscaling Group's IP address
+HOST=`ruby ${WORKSPACE}/lib/return_instance_in_as_group.rb --autoscalingGroup ${AutoScalingGroup}`
 
-      # Create Cloudformaton Stack
-      ruby ${WORKSPACE}/lib/create_stack.rb --stackname AMI-${BUILD_NUMBER}-${JOB_NAME} \
-                                            --group ${Group} \
-                                            --domain ${Domain} \
-                                            --type Infrastructure \
-                                            --ami ${BASE_AMI} \
-                                            --templatelocation ${WORKSPACE}/infrastructure/target/production.template \
-                                            --application AMI-${BUILD_NUMBER} \
-                                            --sshkey ${SSH_KEY} \
-                                            --s3bucket ${S3Bucket} \
-                                            --securitygroup ${SecurityGroupName} \
-                                            --snstopic ${SNS_TOPIC} \
-                                            --language ${Language} \
-                                            --minsize 1 \
-                                            --maxsize 1 \
-                                            --instancesize m1.medium \
-                                            --sdbdomain ${SIMPLEDB_STACK}
+# Run Infrastructure Acceptance Tests
+cucumber ${WORKSPACE}/infrastructure/target/features/production.feature host=${HOST} user=ec2-user key=/usr/share/tomcat6/.ssh/id_rsa
 
-      # Load SimpleDB Domain with Key/Value Pairs
-      ruby ${WORKSPACE}/lib/load_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
-                                           --filename AMI-${BUILD_NUMBER}-${JOB_NAME} \
-                                           --itemname AMI-${BUILD_NUMBER}-${JOB_NAME}
-
-      # Get Application Stack Instance Autoscaling Group
-      AutoScalingGroup=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
-                                                                 --item AMI-${BUILD_NUMBER}-${JOB_NAME} \
-                                                                 --key AutoscalingGroup`
-
-      # Get first Instance in Autoscaling Group's IP address
-      HOST=`ruby ${WORKSPACE}/lib/return_instance_in_as_group.rb --autoscalingGroup ${AutoScalingGroup}`
-
-      # Run Infrastructure Acceptance Tests
-      cucumber ${WORKSPACE}/infrastructure/target/features/production.feature host=${HOST} user=ec2-user key=/usr/share/tomcat6/.ssh/id_rsa
-
-      # AMI the instance
-      ruby ${WORKSPACE}/lib/create_ami.rb --sdbdomain ${SIMPLEDB_STACK} \
-                                          --autoscalingGroup ${AutoScalingGroup} \
-                                          --imagename INFRASTRUCTURE-AMI-${SIMPLEDB_STACK}${BUILD_NUMBER} \
-                                          --amitype infrastructure</command>
+# AMI the instance
+ruby ${WORKSPACE}/lib/create_ami.rb --sdbdomain ${SIMPLEDB_STACK} \
+                                    --autoscalingGroup ${AutoScalingGroup} \
+                                    --imagename INFRASTRUCTURE-AMI-${SIMPLEDB_STACK}${BUILD_NUMBER} \
+                                    --amitype infrastructure</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers>

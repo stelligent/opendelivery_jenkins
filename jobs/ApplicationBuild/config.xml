@@ -53,36 +53,10 @@
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>tar -czvf havoc_compute.tar.gz *
+      <command># Git clone application code
+git clone git@github.com:stelligent/${PROJECT_NAME}.git
 
-# Git clone application code
-git clone git@github.com:stelligent/havoc_platform.git
-
-# Get S3 Bucket
-S3Bucket=`ruby ${WORKSPACE}/havoc_platform/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
-                                                                          --item properties \
-                                                                          --key S3Bucket`
- 
-# Run unit tests
-# cd havoc_compute/
-# sudo bundle install
-# rake
-
-# Push artifacts up to S3
-ruby ${WORKSPACE}/havoc_platform/lib/s3_upload.rb --filename havoc_compute.tar.gz  --bucket ${S3Bucket} --key havoc.tar.gz
-
-cd ${WORKSPACE}/havoc_platform
-
-# Create tar.gz of each artifact
-tar -czvf capistrano.tar.gz deployment/*
-
-ruby ${WORKSPACE}/havoc_platform/lib/s3_upload.rb --filename capistrano.tar.gz     --bucket ${S3Bucket} --key capistrano.tar.gz
-
-# Build Artifact URL
-ruby ${WORKSPACE}/havoc_platform/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
-                                                               --itemname properties \
-                                                               --property ArtifactUrl \
-                                                               --value https://s3.amazonaws.com/${S3Bucket}/havoc.tar.gz</command>
+ruby ${WORKSPACE}/lib/eops/bin/application_build.rb ${WORKSPACE} ${SIMPLEDB_STACK} ${PROJECT_NAME}</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers>
