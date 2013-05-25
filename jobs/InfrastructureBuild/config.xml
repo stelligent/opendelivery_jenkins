@@ -53,26 +53,7 @@
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command># Get S3 Bucket
-S3Bucket=`ruby ${WORKSPACE}/lib/showback_domain.rb --sdbdomain ${SIMPLEDB_STACK} \
-                                                   --item properties \
-                                                   --key S3Bucket`
-
-# Change to puppet Directory
-cd infrastructure/puppet
-tar -czvf puppet.tar.gz modules/* manifests/*
-
-# Change to workspace directory
-cd ${WORKSPACE}
-
-# Push artifacts up to S3
-ruby ${WORKSPACE}/lib/s3_upload.rb --filename infrastructure/puppet/puppet.tar.gz  --bucket ${S3Bucket} --key puppet.tar.gz
-
-# Build Artifact URL
-ruby ${WORKSPACE}/lib/set_properties.rb --sdbdomain ${SIMPLEDB_STACK} \
-                                        --itemname properties \
-                                        --property ArtifactUrl \
-                                        --value https://s3.amazonaws.com/${S3Bucket}/havoc.tar.gz</command>
+      <command>ruby ${WORKSPACE}/lib/eops/bin/infrastructure_build.rb ${WORKSPACE} ${SIMPLEDB_STACK} ${PROJECT_NAME}</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers>
