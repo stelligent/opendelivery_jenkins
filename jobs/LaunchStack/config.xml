@@ -1,0 +1,188 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description>Prototype stack build that will launch a new stack based on infrastructure AMI&apos;s. The sub-projects do most of the work to launc&#xd;
+the individual machines, configure them, and test them.</description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>STACK_PFX</name>
+          <description>Prefix for the stack name, e.g. &quot;SJenk&quot; for &quot;SJenk-1-APP, -WEB, -DB host names.</description>
+          <defaultValue>SJenk9</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>KEYPAIR_NAME</name>
+          <description>Name of an EC2 Keypair that will be used to generate and decrypt password on new servers</description>
+          <defaultValue>jps-dev-keypair</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.ChoiceParameterDefinition>
+          <name>CFN_TEMPLATE</name>
+          <description>Types stacks you can launch:&lt;BR&gt;
+vpc: normal stack of machines&lt;br&gt;
+vpc.companion: empty stack </description>
+          <choices class="java.util.Arrays$ArrayList">
+            <a class="string-array">
+              <string>vpc</string>
+              <string>vpc.companion</string>
+            </a>
+          </choices>
+        </hudson.model.ChoiceParameterDefinition>
+        <hudson.model.ChoiceParameterDefinition>
+          <name>INSTANCE_TYPE</name>
+          <description>Machine size of instances</description>
+          <choices class="java.util.Arrays$ArrayList">
+            <a class="string-array">
+              <string>m1.small</string>
+              <string>m1.medium</string>
+              <string>m1.large</string>
+              <string>m1.xlarge</string>
+            </a>
+          </choices>
+        </hudson.model.ChoiceParameterDefinition>
+        <hudson.model.ChoiceParameterDefinition>
+          <name>AZ</name>
+          <description>Zone to run machines (e.g., us-west-1a).</description>
+          <choices class="java.util.Arrays$ArrayList">
+            <a class="string-array">
+              <string>us-west-1a</string>
+            </a>
+          </choices>
+        </hudson.model.ChoiceParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="hudson.plugins.git.GitSCM" plugin="git@1.4.0">
+    <configVersion>2</configVersion>
+    <userRemoteConfigs>
+      <hudson.plugins.git.UserRemoteConfig>
+        <name></name>
+        <refspec></refspec>
+        <url>${GIT_PLATFORM_REPO}</url>
+      </hudson.plugins.git.UserRemoteConfig>
+    </userRemoteConfigs>
+    <branches>
+      <hudson.plugins.git.BranchSpec>
+        <name>${GIT_PLATFORM_BRANCH}</name>
+      </hudson.plugins.git.BranchSpec>
+    </branches>
+    <disableSubmodules>false</disableSubmodules>
+    <recursiveSubmodules>false</recursiveSubmodules>
+    <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+    <authorOrCommitter>false</authorOrCommitter>
+    <clean>false</clean>
+    <wipeOutWorkspace>false</wipeOutWorkspace>
+    <pruneBranches>false</pruneBranches>
+    <remotePoll>false</remotePoll>
+    <ignoreNotifyCommit>false</ignoreNotifyCommit>
+    <useShallowClone>false</useShallowClone>
+    <buildChooser class="hudson.plugins.git.util.DefaultBuildChooser"/>
+    <gitTool>Default</gitTool>
+    <submoduleCfg class="list"/>
+    <relativeTargetDir></relativeTargetDir>
+    <reference></reference>
+    <excludedRegions></excludedRegions>
+    <excludedUsers></excludedUsers>
+    <gitConfigName></gitConfigName>
+    <gitConfigEmail></gitConfigEmail>
+    <skipTag>true</skipTag>
+    <includedRegions></includedRegions>
+    <scmName></scmName>
+  </scm>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>true</concurrentBuild>
+  <builders>
+    <hudson.plugins.parameterizedtrigger.TriggerBuilder plugin="parameterized-trigger@2.18">
+      <configs>
+        <hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
+          <configs>
+            <hudson.plugins.parameterizedtrigger.CurrentBuildParameters/>
+            <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
+              <properties>STACK_NAME=${STACK_PFX}-${BUILD_NUMBER}</properties>
+            </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
+          </configs>
+          <projects>Launch_APP,Launch_WEB,Launch_DB</projects>
+          <condition>ALWAYS</condition>
+          <triggerWithNoParameters>false</triggerWithNoParameters>
+          <block>
+            <buildStepFailureThreshold>
+              <name>FAILURE</name>
+              <ordinal>2</ordinal>
+              <color>RED</color>
+            </buildStepFailureThreshold>
+            <unstableThreshold>
+              <name>UNSTABLE</name>
+              <ordinal>1</ordinal>
+              <color>YELLOW</color>
+            </unstableThreshold>
+            <failureThreshold>
+              <name>FAILURE</name>
+              <ordinal>2</ordinal>
+              <color>RED</color>
+            </failureThreshold>
+          </block>
+          <buildAllNodesWithLabel>false</buildAllNodesWithLabel>
+        </hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
+      </configs>
+    </hudson.plugins.parameterizedtrigger.TriggerBuilder>
+    <hudson.plugins.parameterizedtrigger.TriggerBuilder plugin="parameterized-trigger@2.18">
+      <configs>
+        <hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
+          <configs>
+            <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
+              <properties>STACK_NAME=${STACK_PFX}-${BUILD_NUMBER}</properties>
+            </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
+          </configs>
+          <projects>StackProtectASG</projects>
+          <condition>ALWAYS</condition>
+          <triggerWithNoParameters>false</triggerWithNoParameters>
+          <block>
+            <buildStepFailureThreshold>
+              <name>FAILURE</name>
+              <ordinal>2</ordinal>
+              <color>RED</color>
+            </buildStepFailureThreshold>
+            <unstableThreshold>
+              <name>UNSTABLE</name>
+              <ordinal>1</ordinal>
+              <color>YELLOW</color>
+            </unstableThreshold>
+            <failureThreshold>
+              <name>FAILURE</name>
+              <ordinal>2</ordinal>
+              <color>RED</color>
+            </failureThreshold>
+          </block>
+          <buildAllNodesWithLabel>false</buildAllNodesWithLabel>
+        </hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
+      </configs>
+    </hudson.plugins.parameterizedtrigger.TriggerBuilder>
+  </builders>
+  <publishers>
+    <org.korosoft.jenkins.plugin.rtp.RichTextPublisher plugin="rich-text-publisher-plugin@1.1">
+      <stableText>h1. Infrastructure Launched
+Infrastructure stack ${ENV:STACK_PFX}-${ENV:BUILD_NUMBER} created and is in the process of launching. Use the [StackValidate(${ENV:STACK_PFX}-${ENV:BUILD_NUMBER})|/jenkins/job/StackValidate/buildWithParameters?STACK_NAME=${ENV:STACK_PFX}-${ENV:BUILD_NUMBER}] job to validate the logs and ensure your machines are ready to use.
+Machines available:
+- ${ENV:STACK_PFX}-${ENV:BUILD_NUMBER}-APP
+- ${ENV:STACK_PFX}-${ENV:BUILD_NUMBER}-WEB
+- ${ENV:STACK_PFX}-${ENV:BUILD_NUMBER}-DB
+
+When you are finished with your stack, use the [TerminateTargetEnvironment|/jenkins/job/TerminateTargetEnvironment] job to delete the stack and all associated resources.</stableText>
+      <unstableText></unstableText>
+      <failedText></failedText>
+      <unstableAsStable>true</unstableAsStable>
+      <failedAsStable>true</failedAsStable>
+      <parserName>Confluence</parserName>
+    </org.korosoft.jenkins.plugin.rtp.RichTextPublisher>
+  </publishers>
+  <buildWrappers>
+    <org.jenkinsci.plugins.buildnamesetter.BuildNameSetter plugin="build-name-setter@1.3">
+      <template>${ENV,var=&quot;STACK_PFX&quot;}-${BUILD_NUMBER}</template>
+    </org.jenkinsci.plugins.buildnamesetter.BuildNameSetter>
+  </buildWrappers>
+</project>

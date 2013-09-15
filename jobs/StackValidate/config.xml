@@ -1,0 +1,114 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description>Gather logs from a prototype stack to validate that it booted correctly.</description>
+  <logRotator class="hudson.tasks.LogRotator">
+    <daysToKeep>-1</daysToKeep>
+    <numToKeep>10</numToKeep>
+    <artifactDaysToKeep>-1</artifactDaysToKeep>
+    <artifactNumToKeep>-1</artifactNumToKeep>
+  </logRotator>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>STACK_NAME</name>
+          <description>Stack name to be used to calculate CISTACK-00-APP, CISTACK-00-WEB, and CISTACK-00-DB</description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>RM_USERNAME</name>
+          <description>Username allow to remotely connect to the test instances</description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.PasswordParameterDefinition>
+          <name>RM_PASSWORD</name>
+          <description>Password for remote user</description>
+          <defaultValue>dp2PLYLpwh+MWFHrHsr0V4oHR1k6p4oG0G1X1lkADD4=</defaultValue>
+        </hudson.model.PasswordParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.BatchFile>
+      <command>powershell -c &quot;set-executionpolicy remotesigned&quot;</command>
+    </hudson.tasks.BatchFile>
+    <hudson.plugins.powershell.PowerShell plugin="powershell@1.2">
+      <command>$Username=$env:RM_USERNAME
+$Password=$env:RM_PASSWORD
+$pass = ConvertTo-SecureString -AsPlainText $Password -Force
+$Cred = New-Object System.Management.Automation.PSCredential -ArgumentList $Username,$pass
+
+$bError=$False
+
+$hostname=&quot;$env:STACK_NAME-APP&quot;
+echo &quot;########################### $hostname cfn-init.log #############################&quot;
+
+invoke-command -Computer $hostname -Command {get-content C:/cfn/log/cfn-init.log} -Credential $Cred &gt; &quot;$hostname-cfn-init.log&quot;
+if ($? -eq $False) { $bError=$True }
+get-content -Tail 20 &quot;$hostname-cfn-init.log&quot;
+
+echo &quot;########################### $hostname chef-client.log #############################&quot;
+invoke-command -Computer $hostname -Command {get-content C:/chef/chef-client.log} -Credential $Cred &gt; &quot;$hostname-chef-client.log&quot;
+if ($? -eq $False) { $bError=$True }
+get-content -Tail 20 &quot;$hostname-chef-client.log&quot;
+
+$hostname=&quot;$env:STACK_NAME-WEB&quot;
+echo &quot;########################### $hostname cfn-init.log #############################&quot;
+
+invoke-command -Computer $hostname -Command {get-content C:/cfn/log/cfn-init.log} -Credential $Cred &gt; &quot;$hostname-cfn-init.log&quot;
+if ($? -eq $False) { $bError=$True }
+get-content -Tail 20 &quot;$hostname-cfn-init.log&quot;
+
+echo &quot;########################### $hostname chef-client.log #############################&quot;
+invoke-command -Computer $hostname -Command {get-content C:/chef/chef-client.log} -Credential $Cred &gt; &quot;$hostname-chef-client.log&quot;
+if ($? -eq $False) { $error=$True }get-content -Tail 20 &quot;$hostname-chef-client.log&quot;
+
+$hostname=&quot;$env:STACK_NAME-DB&quot;
+echo &quot;########################### $hostname cfn-init.log #############################&quot;
+
+invoke-command -Computer $hostname -Command {get-content C:/cfn/log/cfn-init.log} -Credential $Cred &gt; &quot;$hostname-cfn-init.log&quot;
+if ($? -eq $False) { $bError=$True }
+get-content -Tail 20 &quot;$hostname-cfn-init.log&quot;
+
+echo &quot;########################### $hostname chef-client.log #############################&quot;
+invoke-command -Computer $hostname -Command {get-content C:/chef/chef-client.log} -Credential $Cred &gt; &quot;$hostname-chef-client.log&quot;
+if ($?  -eq $False) { $bError=$True }
+get-content -Tail 20 &quot;$hostname-chef-client.log&quot;
+
+echo &quot;&quot;
+echo &quot;Completed log retrieval.&quot;
+echo &quot;&quot;
+
+
+if ($bError -eq $True) {
+  echo &quot;One or more log retrieval tasks failed.&quot;
+  exit 1
+} else {
+  echo &quot;All logs retrieved.&quot;
+  exit 0
+}
+</command>
+    </hudson.plugins.powershell.PowerShell>
+  </builders>
+  <publishers>
+    <hudson.tasks.ArtifactArchiver>
+      <artifacts>*.log</artifacts>
+      <latestOnly>false</latestOnly>
+      <allowEmptyArchive>false</allowEmptyArchive>
+    </hudson.tasks.ArtifactArchiver>
+  </publishers>
+  <buildWrappers>
+    <org.jenkinsci.plugins.buildnamesetter.BuildNameSetter plugin="build-name-setter@1.3">
+      <template>#${BUILD_NUMBER}-${ENV,var=&quot;STACK_NAME&quot;}</template>
+    </org.jenkinsci.plugins.buildnamesetter.BuildNameSetter>
+  </buildWrappers>
+</project>

@@ -1,0 +1,194 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description>Prototype stack build that will launch a new stack based on infrastructure AMI&apos;s.&#xd;
+&lt;p&gt; Use &lt;a href=&quot;../StackValidate&quot;&gt;StackValidate&lt;/a&gt; job to retrieve and examine logs after the Stack Monitor&#xd;
+  jobs signal &quot;Create Complete.&quot;</description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>KEYPAIR_NAME</name>
+          <description>Name of an EC2 Keypair that will be used to generate and decrypt password on new servers</description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>INSTANCE_TYPE</name>
+          <description>Machine size of instances (m1.small, m1.xlarge, etc.)</description>
+          <defaultValue>m1.small</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>CFN_TEMPLATE</name>
+          <description>Group of templates for booting machines (vpc, base, etc.)</description>
+          <defaultValue>vpc</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>AZ</name>
+          <description>Zone to run machines (e.g., us-west-1a).</description>
+          <defaultValue>us-west-1a</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>STACK_PFX</name>
+          <description>Prefix for the stack name, e.g. &quot;SJenk&quot; for &quot;SJenk-1-APP, -WEB, -DB host names.</description>
+          <defaultValue>SJenk9</defaultValue>
+        </hudson.model.StringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="hudson.plugins.git.GitSCM" plugin="git@1.4.0">
+    <configVersion>2</configVersion>
+    <userRemoteConfigs>
+      <hudson.plugins.git.UserRemoteConfig>
+        <name></name>
+        <refspec></refspec>
+        <url>${GIT_PLATFORM_REPO}</url>
+      </hudson.plugins.git.UserRemoteConfig>
+    </userRemoteConfigs>
+    <branches>
+      <hudson.plugins.git.BranchSpec>
+        <name>${GIT_PLATFORM_BRANCH}</name>
+      </hudson.plugins.git.BranchSpec>
+    </branches>
+    <disableSubmodules>false</disableSubmodules>
+    <recursiveSubmodules>false</recursiveSubmodules>
+    <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+    <authorOrCommitter>false</authorOrCommitter>
+    <clean>false</clean>
+    <wipeOutWorkspace>false</wipeOutWorkspace>
+    <pruneBranches>false</pruneBranches>
+    <remotePoll>false</remotePoll>
+    <ignoreNotifyCommit>false</ignoreNotifyCommit>
+    <useShallowClone>false</useShallowClone>
+    <buildChooser class="hudson.plugins.git.util.DefaultBuildChooser"/>
+    <gitTool>Default</gitTool>
+    <submoduleCfg class="list"/>
+    <relativeTargetDir></relativeTargetDir>
+    <reference></reference>
+    <excludedRegions></excludedRegions>
+    <excludedUsers></excludedUsers>
+    <gitConfigName></gitConfigName>
+    <gitConfigEmail></gitConfigEmail>
+    <skipTag>true</skipTag>
+    <includedRegions></includedRegions>
+    <scmName></scmName>
+  </scm>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>true</concurrentBuild>
+  <builders>
+    <hudson.tasks.BatchFile>
+      <command>set STACK=%STACK_PFX%-%BUILD_NUMBER%
+
+ruby %WORKSPACE%/lib/eops/bin/create_environment.rb ^
+--stackname %STACK%-DB ^
+--sdbdomain %PROJECT_NAME% ^
+--ec2keypair %KEYPAIR_NAME% ^
+--instancetype %INSTANCE_TYPE% ^
+--vpcsubnet db_subnet ^
+--availabilityzone %AZ% ^
+--templatename %CFN_TEMPLATE%.database.template ^
+--configtype deployment
+
+
+ruby %WORKSPACE%/lib/eops/bin/create_environment.rb ^
+--stackname %STACK%-APP ^
+--sdbdomain %PROJECT_NAME% ^
+--ec2keypair %KEYPAIR_NAME% ^
+--instancetype %INSTANCE_TYPE% ^
+--vpcsubnet app_subnet ^
+--availabilityzone %AZ% ^
+--templatename %CFN_TEMPLATE%.appserver.template ^
+--configtype deployment
+
+
+
+ruby %WORKSPACE%/lib/eops/bin/create_environment.rb ^
+--stackname %STACK%-WEB ^
+--sdbdomain %PROJECT_NAME% ^
+--ec2keypair %KEYPAIR_NAME% ^
+--instancetype %INSTANCE_TYPE% ^
+--vpcsubnet web_subnet ^
+--availabilityzone %AZ% ^
+--templatename %CFN_TEMPLATE%.webserver.template ^
+--configtype deployment
+
+
+</command>
+    </hudson.tasks.BatchFile>
+    <hudson.plugins.parameterizedtrigger.TriggerBuilder plugin="parameterized-trigger@2.18">
+      <configs>
+        <hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
+          <configs>
+            <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
+              <properties>STACK_NAME=${STACK_PFX}-${BUILD_NUMBER}-WEB
+</properties>
+            </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
+          </configs>
+          <projects>StackMonitor</projects>
+          <condition>ALWAYS</condition>
+          <triggerWithNoParameters>false</triggerWithNoParameters>
+          <buildAllNodesWithLabel>false</buildAllNodesWithLabel>
+        </hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
+      </configs>
+    </hudson.plugins.parameterizedtrigger.TriggerBuilder>
+    <hudson.plugins.parameterizedtrigger.TriggerBuilder plugin="parameterized-trigger@2.18">
+      <configs>
+        <hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
+          <configs>
+            <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
+              <properties>STACK_NAME=${STACK_PFX}-${BUILD_NUMBER}-APP</properties>
+            </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
+          </configs>
+          <projects>StackMonitor</projects>
+          <condition>ALWAYS</condition>
+          <triggerWithNoParameters>false</triggerWithNoParameters>
+          <buildAllNodesWithLabel>false</buildAllNodesWithLabel>
+        </hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
+      </configs>
+    </hudson.plugins.parameterizedtrigger.TriggerBuilder>
+    <hudson.plugins.parameterizedtrigger.TriggerBuilder plugin="parameterized-trigger@2.18">
+      <configs>
+        <hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
+          <configs>
+            <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
+              <properties>STACK_NAME=${STACK_PFX}-${BUILD_NUMBER}-DB</properties>
+            </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
+          </configs>
+          <projects>StackMonitor</projects>
+          <condition>ALWAYS</condition>
+          <triggerWithNoParameters>false</triggerWithNoParameters>
+          <buildAllNodesWithLabel>false</buildAllNodesWithLabel>
+        </hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
+      </configs>
+    </hudson.plugins.parameterizedtrigger.TriggerBuilder>
+  </builders>
+  <publishers>
+    <org.korosoft.jenkins.plugin.rtp.RichTextPublisher plugin="rich-text-publisher-plugin@1.1">
+      <stableText>h1. Infrastructure Successfully Launched
+Infrastructure stack ${ENV:STACK_PFX}-${ENV:BUILD_NUMBER} created and is in the process of launching. Use the down-stream [StackMonitor|/jenkins/job/Stack%20Monitor] jobs listed on this page to monitor when they are completely launched and available for login
+
+Machines available:
+- ${ENV:STACK_PFX}-${ENV:BUILD_NUMBER}-APP
+- ${ENV:STACK_PFX}-${ENV:BUILD_NUMBER}-WEB
+- ${ENV:STACK_PFX}-${ENV:BUILD_NUMBER}-DB
+
+When you are finished with your stack, use the [TerminateTargetEnvironment|/jenkins/job/TerminateTargetEnvironment] job to delete the stack and all associated resources.</stableText>
+      <unstableText></unstableText>
+      <failedText>h1. Infrastructure Failed to Launch
+
+Infrastructure build for ${ENV:STACK_PFX}-${ENV:BUILD_NUMBER} failed to launch. Use the [StackValidate|/jenkins/job/StackValidate] job to retrieve logs and determine the cause.</failedText>
+      <unstableAsStable>true</unstableAsStable>
+      <failedAsStable>false</failedAsStable>
+      <parserName>Confluence</parserName>
+    </org.korosoft.jenkins.plugin.rtp.RichTextPublisher>
+  </publishers>
+  <buildWrappers>
+    <org.jenkinsci.plugins.buildnamesetter.BuildNameSetter plugin="build-name-setter@1.3">
+      <template>${ENV,var=&quot;STACK_PFX&quot;}-${BUILD_NUMBER}</template>
+    </org.jenkinsci.plugins.buildnamesetter.BuildNameSetter>
+  </buildWrappers>
+</project>

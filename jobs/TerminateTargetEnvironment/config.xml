@@ -1,0 +1,105 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description>This job is used to terminate stacks by STACK_NAME. It will also delete the simpledb configuration domain associated with the STACK. It is&#xd;
+best practice to use this job for terminating target stacks</description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>STACK_NAME</name>
+          <description>This should be something like &quot;CISTACK-99&quot; which will delete CISTACK-99-APP, CISTACK-99-WEB, and CISTACK-99-DB.</description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="hudson.plugins.git.GitSCM" plugin="git@1.4.0">
+    <configVersion>2</configVersion>
+    <userRemoteConfigs>
+      <hudson.plugins.git.UserRemoteConfig>
+        <name></name>
+        <refspec></refspec>
+        <url>${GIT_PLATFORM_REPO}</url>
+      </hudson.plugins.git.UserRemoteConfig>
+    </userRemoteConfigs>
+    <branches>
+      <hudson.plugins.git.BranchSpec>
+        <name>${GIT_PLATFORM_BRANCH}</name>
+      </hudson.plugins.git.BranchSpec>
+    </branches>
+    <disableSubmodules>false</disableSubmodules>
+    <recursiveSubmodules>false</recursiveSubmodules>
+    <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+    <authorOrCommitter>false</authorOrCommitter>
+    <clean>false</clean>
+    <wipeOutWorkspace>false</wipeOutWorkspace>
+    <pruneBranches>false</pruneBranches>
+    <remotePoll>false</remotePoll>
+    <ignoreNotifyCommit>false</ignoreNotifyCommit>
+    <useShallowClone>false</useShallowClone>
+    <buildChooser class="hudson.plugins.git.util.DefaultBuildChooser"/>
+    <gitTool>Default</gitTool>
+    <submoduleCfg class="list"/>
+    <relativeTargetDir></relativeTargetDir>
+    <reference></reference>
+    <excludedRegions></excludedRegions>
+    <excludedUsers></excludedUsers>
+    <gitConfigName></gitConfigName>
+    <gitConfigEmail></gitConfigEmail>
+    <skipTag>false</skipTag>
+    <includedRegions></includedRegions>
+    <scmName></scmName>
+  </scm>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>true</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>cd c:/chef
+knife node bulk delete &quot;${STACK_NAME}-.*&quot; --yes
+knife client bulk delete &quot;${STACK_NAME}-.*&quot; --yes
+
+# Remove elements from AD, but ignore any errors since they might not exist
+ruby ${WORKSPACE}/bin/ad_disconnect.rb \
+--sdbdomain ${PROJECT_NAME} \
+--stackname ${STACK_NAME}-WEB \
+--debug || true
+
+ruby ${WORKSPACE}/bin/ad_disconnect.rb \
+--sdbdomain ${PROJECT_NAME} \
+--stackname ${STACK_NAME}-APP \
+--debug || true
+
+
+ruby ${WORKSPACE}/bin/ad_disconnect.rb \
+--sdbdomain ${PROJECT_NAME} \
+--stackname ${STACK_NAME}-DB \
+--debug || true
+
+###################################
+
+ruby ${WORKSPACE}/bin/terminate_environment.rb \
+--sdbdomain ${PROJECT_NAME} \
+--stackname ${STACK_NAME}-WEB
+
+ruby ${WORKSPACE}/bin/terminate_environment.rb \
+--sdbdomain ${PROJECT_NAME} \
+--stackname ${STACK_NAME}-APP
+
+ruby ${WORKSPACE}/bin/terminate_environment.rb \
+--sdbdomain ${PROJECT_NAME} \
+--stackname ${STACK_NAME}-DB</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers>
+    <org.jenkinsci.plugins.buildnamesetter.BuildNameSetter plugin="build-name-setter@1.3">
+      <template>#${BUILD_NUMBER}-${ENV,var=&quot;STACK_NAME&quot;}</template>
+    </org.jenkinsci.plugins.buildnamesetter.BuildNameSetter>
+  </buildWrappers>
+</project>
